@@ -11,13 +11,13 @@
         - strings (variables)[_A-Za-z][_A-Za-z0-9]*
         - operators +|-|*|/|==|!=|<=|>=|<|>|=|+=|-=|*=|/=|++|--|&&| ||
         - comments 
-        - keywords (if|else|while|for|return|break|continue|switch|case|default|void|int|float|string|char|const|auto|enum|true|false)
+        - keywords (if|else|while|for|return|break|continue|switch|case|default|void|int|float|string|char|const|enum|true|false)
         */ 
 
         /*Integers and floats*/
 
-0|[1-9][0-9]*  { yylval.integerval = atoi(yytext);return INTEGER; }             /* Match a number */
-[0-9]*\.[0-9]+  { yylval.floatval = atof(yytext);return FLOAT; }                 /* Match a float */
+0|[1-9][0-9]*  { yylval.integerval = atoi(yytext);return INTEGER_LITERAL; }             /* Match a number */
+[0-9]*\.[0-9]+  { yylval.floatval = atof(yytext);return FLOAT_LITERAL; }                 /* Match a float */
 
         /*Keywords*/
 "if"                { return IF; }
@@ -29,17 +29,19 @@
 "continue"          { return CONTINUE; }
 "switch"            { return SWITCH; }
 "case"              { return CASE; }
+"repeat"            { return REPEAT; }
+"until"             { return UNTIL; }
 "default"           { return DEFAULT; }
+
 "void"              { return VOID; }
 "int"               { return INT; }
 "float"             { return FLOAT; }
 "string"            { return STRING; }
 "char"              { return CHAR; }
 "const"             { return CONST; }
-"auto"              { return AUTO; }
 "enum"              { return ENUM; }
-"true"              { yylval.boolval = TRUE; return BOOL_TRUE; }
-"false"             { yylval.boolval = FALSE; return BOOL_FALSE; }
+"true"              { yylval.boolval = TRUE; return BOOLEAN_TRUE; }
+"false"             { yylval.boolval = FALSE; return BOOLEAN_FALSE; }
 
         /* Variable names*/
 
@@ -56,12 +58,14 @@
 "-"                { return MINUS; }
 "*"                { return MULTIPLY; }
 "/"                { return DIVIDE; }
+
 "=="               { return EQUAL; } //logical equal
 "!="               { return NOT_EQUAL; }
+">"                { return GREATER; }
+"<"                { return LESS; }
 "<="               { return LESS_EQUAL; }
 ">="               { return GREATER_EQUAL; }
-"<"                { return LESS; }
-">"                { return GREATER; }
+
 "="                { return ASSIGN; } //assignment statement
 "+="               { return PLUS_ASSIGN; }
 "-="               { return MINUS_ASSIGN; }
@@ -69,8 +73,10 @@
 "/="               { return DIVIDE_ASSIGN; }
 "++"               { return INCREMENT; }
 "--"               { return DECREMENT; }
+
 "&&"               { return AND; }
 "||"               { return OR; }
+"!"                { return NOT; }
 
         /*Punctuation*/
 
