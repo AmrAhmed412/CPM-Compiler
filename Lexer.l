@@ -53,7 +53,7 @@
 
         /*Strings and characters*/
 
-\"[a-zA-Z0-9_\-!@#$%~\^&\*\(\)\[\]\+\?']*\"  { yylval.stringval = strdup(yytext); return STRING_LITERAL; }    /* Match a string */
+\"[a-zA-Z0-9_\-!@#$%~\^&\*\(\)\[\]\+\? \t']*\"  { yylval.stringval = strdup(yytext); return STRING_LITERAL; }    /* Match a string */
 \'[a-zA-Z0-9]\' { yylval.charval = yytext[1]; return CHAR_LITERAL; }    /* Match a character */
 
         /*Operators*/
@@ -85,7 +85,7 @@
         /*Punctuation*/
 
 [;,:]             { return yytext[0]; }
-[(){}\[\]]          { return yytext[0]; }
+[\(\){}\[\]]          { return yytext[0]; }
         /*Comments*/ 
 
 \/\/[^\n]*             { /* ignore single line comments */ };
@@ -93,7 +93,7 @@
 
             /*Whitespace*/
 
-[ \t]+           { /* ignore whitespace */ };
+[ \t\n]+           { /* ignore whitespace */ };
 
 .               { yyerror("Unrecognized character"); }
 

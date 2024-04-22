@@ -67,16 +67,17 @@ program:              {printf("Empty Program ;-;\n");}
     ; 
 
 programStatements:         
-    statement programStatements      {printf("Program statements\n");}
-    |statement 
-    |functionDeclaration
+    typeSpecifier VARIABLE '(' parameters ')' '{' programStatements '}' {printf("Function Declaration\n");} 
+    | typeSpecifier VARIABLE '('')' '{' programStatements '}'  {printf("Function Declaration with no parameters\n");}      {printf("Program statements\n");}
+    | programStatements statement  
+    | statement
     ;
 
 
 statement:                 
-    declaration           {printf("declaration\n");}
-    | assignment         {printf("Assignment\n");} 
-    | expression         {printf("Expression\n");}
+    declaration ';'           {printf("declaration\n");}
+    | assignment ';'        {printf("Assignment\n");} 
+    /* | expression ';'        {printf("Expression\n");} */
     | ifStatement           {printf("If Statement\n");}
     | whileStatement        {printf("While Statement\n");}
     | forStatement          {printf("For Statement\n");} 
@@ -89,6 +90,7 @@ statement:
     | typeSpecifier VARIABLE ASSIGN functionCall     {printf("Function Call with Assignment\n");}  
     | BREAK ';'        {printf("Break\n");}
     | CONTINUE ';'      {printf("Continue\n");}
+    /* |';'                {printf("Semicolon\n");} */
     ;  
 
 functionCall:               
@@ -101,11 +103,8 @@ callParameters:
     | callParameters ',' VARIABLE   {printf("Multiple  Parameters\n");}
     ;
 
-functionDeclaration:        
-    typeSpecifier VARIABLE '(' parameters ')' '{' programStatements '}' {printf("Function Declaration\n");} 
-    | typeSpecifier VARIABLE '(' ')' '{' programStatements '}'  {printf("Function Declaration with no parameters\n");}
-    | VOID 
-    ;
+/* functionDeclaration:        
+    ; */
 
 enumStatement:             
     ENUM VARIABLE '{' enumValues '}' ';' {printf("Enum Statement\n");}
@@ -122,8 +121,8 @@ parameters:
     ;
 
 declaration:
-    typeSpecifier VARIABLE ';'    {printf("Declaration with no assignment\n");}
-    | typeSpecifier VARIABLE ASSIGN expression ';' {printf("Declaration with Assignment\n");}
+    typeSpecifier VARIABLE     {printf("Declaration with no assignment\n");}
+    | typeSpecifier VARIABLE ASSIGN expression  {printf("Declaration with Assignment\n");}
     ;
 
 typeSpecifier:
@@ -152,9 +151,6 @@ crements:
 
 expression:
     Mathematicalexpressions         {printf("Expression\n");}
-    | expression AND expression     {printf("And Expression\n");}
-    | expression OR expression      {printf("Or Expression\n");}
-    | NOT expression                {printf("Not Expression\n");}
     | comparators                   {printf("Comparators\n");}                   
     | '(' expression ')'            {printf("Bracket Expression\n");}
     | values                        {printf("Values\n");}
@@ -169,12 +165,15 @@ Mathematicalexpressions:
     ;
 
 comparators:
-    expression EQUAL expression         {printf("Equal\n");}
-    | expression NOT_EQUAL expression   {printf("Not Equal\n");}
-    | expression GREATER expression     {printf("Greater\n");}
-    | expression LESS expression        {printf("Less\n");}
-    | expression GREATER_EQUAL expression   {printf("Greater Equal\n");}
-    | expression LESS_EQUAL expression      {printf("Less Equal\n");}
+    values EQUAL values         {printf("Equal\n");}
+    | values NOT_EQUAL values   {printf("Not Equal\n");}
+    | values GREATER values     {printf("Greater\n");}
+    | values LESS values        {printf("Less\n");}
+    | values GREATER_EQUAL values   {printf("Greater Equal\n");}
+    | values LESS_EQUAL values      {printf("Less Equal\n");}
+    | VARIABLE AND VARIABLE             {printf("And\n");}
+    | VARIABLE OR VARIABLE              {printf("Or\n");}
+    | NOT VARIABLE                    {printf("Not\n");}
     ;
 
 values:
@@ -187,12 +186,18 @@ values:
     | BOOLEAN_FALSE     {printf("Boolean False\n");}
     ;
 ifStatement:
-    IF '(' comparators ')' statement    {printf("If Single Statement\n");} 
-    | IF '(' comparators ')' statement  ELSE statement  {printf("If Else Single Statement\n");}
-    | IF '(' comparators ')' '{' programStatements '}'  {printf("If Multiple Statements\n");}
-    | IF '(' comparators ')' '{' programStatements '}' ELSE '{' programStatements '}'   {printf("If Else Multiple Statements\n");}
-    | IF '(' comparators ')' '{' programStatements '}' ELSE statement   {printf("If Multiple Statements Else Single Statement\n");}
-    | IF '(' comparators ')' statement ELSE '{' programStatements '}'   {printf("If Single Statement Else Multiple Statements\n");}
+    IF '(' comparators ')' statement    {printf("If Single Statement with comparators\n");} 
+    | IF '(' comparators ')' statement  ELSE statement  {printf("If Else Single Statement with comparators\n");}
+    | IF '(' comparators ')' '{' programStatements '}'  {printf("If Multiple Statements with comparators\n");}
+    | IF '(' comparators ')' '{' programStatements '}' ELSE '{' programStatements '}'   {printf("If Else Multiple Statements with comparators\n");}
+    | IF '(' comparators ')' '{' programStatements '}' ELSE statement   {printf("If Multiple Statements Else Single Statement with comparators\n");}
+    | IF '(' comparators ')' statement ELSE '{' programStatements '}'   {printf("If Single Statement Else Multiple Statements with comparators\n");}
+    | IF '(' VARIABLE ')' statement    {printf("If Single Statement with VARIABLE\n");} 
+    | IF '(' VARIABLE ')' statement  ELSE statement  {printf("If Else Single Statement with VARIABLE\n");}
+    | IF '(' VARIABLE ')' '{' programStatements '}'  {printf("If Multiple Statements with VARIABLE\n");}
+    | IF '(' VARIABLE ')' '{' programStatements '}' ELSE '{' programStatements '}'   {printf("If Else Multiple Statements with VARIABLE\n");}
+    | IF '(' VARIABLE ')' '{' programStatements '}' ELSE statement   {printf("If Multiple Statements Else Single Statement with VARIABLE\n");}
+    | IF '(' VARIABLE ')' statement ELSE '{' programStatements '}'   {printf("If Single Statement Else Multiple Statements with VARIABLE\n");}
     ;
 
 whileStatement:
@@ -207,6 +212,7 @@ forExpression:
     | VARIABLE MULTIPLY_ASSIGN expression   {printf("For statement Variable Multiply Equal\n");} 
     | VARIABLE DIVIDE_ASSIGN expression     {printf("For statement Variable Divide Equal\n");} 
     | crements                          {printf("For statement Crements\n");} 
+    ;
 
 forStatement:
     FOR '(' INT VARIABLE ASSIGN INTEGER_LITERAL ';' comparators ';' forExpression ')' statement   {printf("For Single Statement\n");}
