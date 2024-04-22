@@ -1,6 +1,9 @@
 %{
     #include <stdio.h>
-    #include "Parser.tab.h"
+    #include <stdlib.h>
+    #include <stdbool.h>
+    #include <string.h>
+    #include "y.tab.h"
     int yyerror(char *s); 
 %}
 
@@ -40,12 +43,13 @@
 "char"              { return CHAR; }
 "const"             { return CONST; }
 "enum"              { return ENUM; }
-"true"              { yylval.boolval = TRUE; return BOOLEAN_TRUE; }
-"false"             { yylval.boolval = FALSE; return BOOLEAN_FALSE; }
+"bool"              { return BOOL; }
+"true"              { yylval.boolval = true; return BOOLEAN_TRUE; }
+"false"             { yylval.boolval = false; return BOOLEAN_FALSE; }
 
         /* Variable names*/
 
-[_A-Za-z][_A-Za-z0-9]*  { yylval.stringval = strdup(yytext); return VARIABLE; }    /* Match a variable name */
+[_A-Za-z][_A-Za-z0-9]*  { yylval.varval = strdup(yytext); return VARIABLE; }    /* Match a variable name */
 
         /*Strings and characters*/
 
@@ -89,7 +93,7 @@
 
             /*Whitespace*/
 
-[ \t\n]+           { /* ignore whitespace */ };
+[ \t]+           { /* ignore whitespace */ };
 
 .               { yyerror("Unrecognized character"); }
 
