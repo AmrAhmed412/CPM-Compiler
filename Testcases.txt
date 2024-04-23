@@ -1,0 +1,205 @@
+int x =2;
+
+if (x<3)
+{
+int y=90;
+int z=y++; //this is a comment
+}
+int c=3;
+bool m = true;
+char character = 'a';
+string s = "ana te3ebt wallahy";
+==============================
+int x=2;
+if (x<3)
+
+int y=90;
+int z=y++;
+bool flag = false;
+/* this is 
+a comment
+written on 
+multiple lines
+*/
+for (int i=0;i<10;i+=2)
+{
+	if (flag)
+		{
+			int y = --i;
+			if (i>5)
+			i+=6;
+			else
+			continue;
+		}
+	if (!flag)
+	break;
+}
+==============================
+int x=2;
+if (x<3)
+
+int y=90;
+int z=y++;
+bool flag = false;
+/* this is 
+a comment
+written on 
+multiple lines
+*/
+for (int i=0;i<10;i+=2)//this is a comment
+{
+	if (flag)
+		{
+			int y = --i;
+			if (i>5)
+			i+=6;
+			else
+				{
+					flag = false;
+					continue;
+				}
+		}
+	if (!flag)
+	break;
+}
+==============================
+switch(x)
+{
+	case 1:
+	{
+		print("x one"); 
+		char y='y';
+		break;
+	}
+	case 2:
+	{
+		print("x two"); //comment ana asef bgd
+		break;
+	}
+	case 3:
+	{
+		print ("x three"); 
+		break;
+	}
+	default:
+	{
+		print("entered default"); 
+		break;
+	}	
+
+}
+==============================
+switch (x)
+{
+case 1 :
+print (x);
+break;
+
+case 2:
+print (x);
+break;
+
+default:
+print (x);
+break;
+}
+
+print("alo");
+==============================
+enum x
+{
+	Abdo,
+	Amr,
+	Mai
+};
+int main ()
+{
+	bool flag = false;
+	enum x amr = Amr;
+	if (amr == Amr)
+		{
+			flag = true;
+		}
+	if (flag)
+	print ("the value of the enum is Amr");
+	else
+	print ("the value of the enum is not Amr");
+	return 0;
+}
+==============================
+const x = 3;
+int y =(2+x);
+y++;
+repeat 
+{
+	y++;
+	print (y);//this is a comment
+}
+until (y>10);
+==============================
+int z=0;
+int x=0;
+for (int i=0;i<9;i++)
+{
+if (y<3)
+{
+
+z+=83;
+y+=z;
+}
+else
+{
+int k=7;
+}
+}
+while (x<3)
+x++;
+char o = 'a';
+bool no = false;
+int xfunc()
+{
+int y=0;
+y++;
+return 0;
+}
+int zfunc()
+{
+return;
+}
+============================
+Failed Testcases:
+============================
+string z="alo";
+int k=2;
+if (k<0)
+return;
+int x =;
+int y=2;
+===========================
+int x=2;
+switch (x)
+{
+	case 0:
+	print (x);//this is a comment
+	case 1:
+	print (x);
+	break;
+	default:
+	print(x);
+	break;
+}
+===========================
+int y=0;
+int z=23;
+if (y>z)
+{
+	int x 
+	x+=y+z;
+}
+
+===========================
+int x =2;
+if (x=3)
+{
+	print (x);
+}
