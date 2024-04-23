@@ -53,7 +53,7 @@
 
         /*Strings and characters*/
 
-\"[a-zA-Z0-9_\-!@#$%~\^&\*\(\)\[\]\+\? \t']*\"  { yylval.stringval = strdup(yytext); return STRING_LITERAL; }    /* Match a string */
+\"[a-zA-Z0-9_\-=<>{},\.!@#$%~\^&\*\(\)\[\]\+\? \t']*\"  { yylval.stringval = strdup(yytext); return STRING_LITERAL; }    /* Match a string */
 \'[a-zA-Z0-9]\' { yylval.charval = yytext[1]; return CHAR_LITERAL; }    /* Match a character */
 
         /*Operators*/

@@ -67,12 +67,18 @@ program:              {printf("Empty Program ;-;\n");}
     ; 
 
 programStatements:         
-    typeSpecifier VARIABLE '(' parameters ')' '{' programStatements '}' {printf("Function Declaration\n");} 
-    | typeSpecifier VARIABLE '('')' '{' programStatements '}'  {printf("Function Declaration with no parameters\n");}      {printf("Program statements\n");}
-    | programStatements statement  
+      statement programStatements                               {printf("Program statements\n");}
+    | typeSpecifier VARIABLE '(' parameters ')' '{' inBlockscope '}' programStatements {printf("Function Declaration\n");} 
+    | typeSpecifier VARIABLE '('')' '{' inBlockscope '}'  programStatements {printf("Function Declaration with no parameters\n");}
+    | typeSpecifier VARIABLE '(' parameters ')' '{' inBlockscope '}'  {printf("Function Declaration\n");} 
+    | typeSpecifier VARIABLE '('')' '{' inBlockscope '}'   {printf("Function Declaration with no parameters\n");}      
     | statement
     ;
 
+inBlockscope:
+      inBlockscope statement   {printf("Block Scope\n");}
+    |statement 
+    ;
 
 statement:                 
     declaration ';'           {printf("declaration\n");}
@@ -83,13 +89,14 @@ statement:
     | forStatement          {printf("For Statement\n");} 
     | switchStatement       {printf("Switch Statement\n");}
     | returnStatement       {printf("Return Statement\n");}
-    | repeatUntilStatement  {printf("Repeat Until Statement\n");}
+    | repeatUntilStatement  {printf("Repeat Until Statement from statement\n");}
     | functionCall       {printf("Function Call\n");}
     | enumStatement         {printf("Enum Statement\n");}
     | VARIABLE ASSIGN functionCall       {printf("Function Call with Assignment\n");}
     | typeSpecifier VARIABLE ASSIGN functionCall     {printf("Function Call with Assignment\n");}  
     | BREAK ';'        {printf("Break\n");}
     | CONTINUE ';'      {printf("Continue\n");}
+    | error ';'     { yyerrok; }
     /* |';'                {printf("Semicolon\n");} */
     ;  
 
@@ -99,8 +106,8 @@ functionCall:
     ;
 
 callParameters:             
-    VARIABLE    {printf("Parameter\n");}
-    | callParameters ',' VARIABLE   {printf("Multiple  Parameters\n");}
+    values    {printf("Parameter\n");}
+    | callParameters ',' values   {printf("Multiple  Parameters\n");}
     ;
 
 /* functionDeclaration:        
@@ -123,6 +130,8 @@ parameters:
 declaration:
     typeSpecifier VARIABLE     {printf("Declaration with no assignment\n");}
     | typeSpecifier VARIABLE ASSIGN expression  {printf("Declaration with Assignment\n");}
+    | ENUM VARIABLE VARIABLE                {printf("Enum Declaration\n");}
+    | ENUM VARIABLE VARIABLE ASSIGN VARIABLE  {printf("Enum Declaration with Assignment\n");}
     ;
 
 typeSpecifier:
@@ -145,23 +154,44 @@ assignment:
     ;
 
 crements:
-    VARIABLE INCREMENT             {printf("Increment\n");}
-    | VARIABLE DECREMENT            {printf("Decrement\n");}
+    VARIABLE INCREMENT             {printf("Increment after Variable\n");}
+    | VARIABLE DECREMENT            {printf("Decrement after Variable \n");}
+    | INCREMENT VARIABLE            {printf("Increment before Variable \n");}
+    | DECREMENT VARIABLE            {printf("Decrement before Variable \n");}
     ;
 
-expression:
+/* expression:
     Mathematicalexpressions         {printf("Expression\n");}
     | comparators                   {printf("Comparators\n");}                   
     | '(' expression ')'            {printf("Bracket Expression\n");}
     | values                        {printf("Values\n");}
-    ;
+    ; */
 
-Mathematicalexpressions:
+/* Mathematicalexpressions:
     expression PLUS expression          {printf("Mathematical Expressions\n");}
     | expression MINUS expression       {printf("Minus Expressions\n");}
     | expression MULTIPLY expression    {printf("Multiply Expressions\n");}
     | expression DIVIDE expression      {printf("Divide Expressions\n");}
     | crements                          {printf("Crements\n");}
+    ; */
+
+expression:
+    expression PLUS term            {printf("Addition\n");}
+    | expression MINUS term         {printf("Subtraction\n");}
+    | term                         {printf("Term\n");}
+    ;
+
+term:
+    term MULTIPLY factor           {printf("Multiplication\n");}
+    | term DIVIDE factor           {printf("Division\n");}
+    | factor                       {printf("Factor\n");}
+    ;
+
+factor:
+    '(' expression ')'             {printf("Bracket Expression\n");}
+    | values                       {printf("Values\n");}
+    | crements                      {printf("Crements\n");}
+    |comparators                {printf("Comparators\n");}
     ;
 
 comparators:
@@ -188,21 +218,21 @@ values:
 ifStatement:
     IF '(' comparators ')' statement    {printf("If Single Statement with comparators\n");} 
     | IF '(' comparators ')' statement  ELSE statement  {printf("If Else Single Statement with comparators\n");}
-    | IF '(' comparators ')' '{' programStatements '}'  {printf("If Multiple Statements with comparators\n");}
-    | IF '(' comparators ')' '{' programStatements '}' ELSE '{' programStatements '}'   {printf("If Else Multiple Statements with comparators\n");}
-    | IF '(' comparators ')' '{' programStatements '}' ELSE statement   {printf("If Multiple Statements Else Single Statement with comparators\n");}
-    | IF '(' comparators ')' statement ELSE '{' programStatements '}'   {printf("If Single Statement Else Multiple Statements with comparators\n");}
+    | IF '(' comparators ')' '{' inBlockscope '}'  {printf("If Multiple Statements with comparators\n");}
+    | IF '(' comparators ')' '{' inBlockscope '}' ELSE '{' inBlockscope '}'   {printf("If Else Multiple Statements with comparators\n");}
+    | IF '(' comparators ')' '{' inBlockscope '}' ELSE statement   {printf("If Multiple Statements Else Single Statement with comparators\n");}
+    | IF '(' comparators ')' statement ELSE '{' inBlockscope '}'   {printf("If Single Statement Else Multiple Statements with comparators\n");}
     | IF '(' VARIABLE ')' statement    {printf("If Single Statement with VARIABLE\n");} 
     | IF '(' VARIABLE ')' statement  ELSE statement  {printf("If Else Single Statement with VARIABLE\n");}
-    | IF '(' VARIABLE ')' '{' programStatements '}'  {printf("If Multiple Statements with VARIABLE\n");}
-    | IF '(' VARIABLE ')' '{' programStatements '}' ELSE '{' programStatements '}'   {printf("If Else Multiple Statements with VARIABLE\n");}
-    | IF '(' VARIABLE ')' '{' programStatements '}' ELSE statement   {printf("If Multiple Statements Else Single Statement with VARIABLE\n");}
-    | IF '(' VARIABLE ')' statement ELSE '{' programStatements '}'   {printf("If Single Statement Else Multiple Statements with VARIABLE\n");}
+    | IF '(' VARIABLE ')' '{' inBlockscope '}'  {printf("If Multiple Statements with VARIABLE\n");}
+    | IF '(' VARIABLE ')' '{' inBlockscope '}' ELSE '{' inBlockscope '}'   {printf("If Else Multiple Statements with VARIABLE\n");}
+    | IF '(' VARIABLE ')' '{' inBlockscope '}' ELSE statement   {printf("If Multiple Statements Else Single Statement with VARIABLE\n");}
+    | IF '(' VARIABLE ')' statement ELSE '{' inBlockscope '}'   {printf("If Single Statement Else Multiple Statements with VARIABLE\n");}
     ;
 
 whileStatement:
     WHILE '(' expression ')' statement      {printf("While Single Statement\n");}
-    | WHILE '(' expression ')' '{' programStatements '}'    {printf("While Multiple Statements\n");}
+    | WHILE '(' expression ')' '{' inBlockscope '}'    {printf("While Multiple Statements\n");}
     ;
 
 forExpression:
@@ -216,7 +246,7 @@ forExpression:
 
 forStatement:
     FOR '(' INT VARIABLE ASSIGN INTEGER_LITERAL ';' comparators ';' forExpression ')' statement   {printf("For Single Statement\n");}
-    | FOR '(' INT VARIABLE ASSIGN INTEGER_LITERAL ';' comparators ';' forExpression ')' '{' programStatements '}'   {printf("For Multiple Statements\n");}
+    | FOR '(' INT VARIABLE ASSIGN INTEGER_LITERAL ';' comparators ';' forExpression ')' '{' inBlockscope '}'   {printf("For Multiple Statements\n");}
     ;
 
 switchStatement:
@@ -224,8 +254,10 @@ switchStatement:
     ;
 
 caseStatements:
-    CASE INTEGER_LITERAL ':' programStatements  BREAK ';'   {printf("Case Statement\n");}
-    | DEFAULT ':' programStatements     {printf("Default Statement\n");}
+    CASE INTEGER_LITERAL ':' statement  BREAK ';' caseStatements  {printf("Case Statement single statement\n");}
+    | DEFAULT ':' statement  BREAK ';'    {printf("Default Statement single statement\n");}
+    | CASE INTEGER_LITERAL ':' '{'inBlockscope BREAK ';' '}' caseStatements   {printf("Case Statement multiple statements\n");}
+    | DEFAULT ':' '{'inBlockscope BREAK ';' '}'   {printf("Default Statement multiple statements\n");}
     ;
 
 returnStatement:
@@ -234,7 +266,7 @@ returnStatement:
     ;
 
 repeatUntilStatement:
-    REPEAT '{' programStatements '}' UNTIL '(' comparators ')' ';'  {printf("Repeat Until Statement\n");}
+    REPEAT '{' inBlockscope '}' UNTIL '(' comparators ')' ';'  {printf("Repeat Until Statement scope\n");}
 ;
 %%
 
