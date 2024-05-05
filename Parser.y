@@ -215,7 +215,9 @@ values:
     | BOOLEAN_TRUE      {printf("Boolean True\n");}
     | BOOLEAN_FALSE     {printf("Boolean False\n");}
     ;
-ifStatement:
+
+
+/* ifStatement:
     IF '(' comparators ')' statement    {printf("If Single Statement with comparators\n");} 
     | IF '(' comparators ')' statement  ELSE statement  {printf("If Else Single Statement with comparators\n");}
     | IF '(' comparators ')' '{' inBlockscope '}'  {printf("If Multiple Statements with comparators\n");}
@@ -228,15 +230,55 @@ ifStatement:
     | IF '(' VARIABLE ')' '{' inBlockscope '}' ELSE '{' inBlockscope '}'   {printf("If Else Multiple Statements with VARIABLE\n");}
     | IF '(' VARIABLE ')' '{' inBlockscope '}' ELSE statement   {printf("If Multiple Statements Else Single Statement with VARIABLE\n");}
     | IF '(' VARIABLE ')' statement ELSE '{' inBlockscope '}'   {printf("If Single Statement Else Multiple Statements with VARIABLE\n");}
+    ; */
+
+
+ifStatement:
+    ifComparators
+    | ifVariable
     ;
 
-whileStatement:
-    WHILE '(' expression ')' statement      {printf("While Single Statement\n");}
-    | WHILE '(' expression ')' '{' inBlockscope '}'    {printf("While Multiple Statements\n");}
+ifComparators:
+    IF '(' comparators ')' statementOrBlock elseClause
+    | IF '(' comparators ')' statementOrBlock
+
+ifVariable:
+    IF '(' VARIABLE ')' statementOrBlock elseClause
+    | IF '(' VARIABLE ')' statementOrBlock
+
+
+elseClause:
+    ELSE statementOrBlock
     ;
+statementOrBlock:
+    statement
+    | '{' inBlockscope '}'
+    ;
+
+    /* 1 shift/reduce and 1 reduce/reduce
+    matchedIf:
+    IF '(' comparators ')' matchedIf ELSE matchedIf
+    |IF '(' VARIABLE ')' matchedIf ELSE matchedIf
+    |statementForIf
+    ;
+    
+
+ifComparators:
+    IF '(' comparators ')' matchedIf ELSE statement
+    |IF '(' comparators ')' '{' inBlockscope '}' elseClause
+    | IF '(' comparators ')' statementForIf
+    |IF '(' comparators ')' matchedIf 
+    | IF '(' comparators ')' '{' inBlockscope '}'
+    */
+
+    
+whileStatement:
+    WHILE '(' expression ')' statementOrBlock      {printf("While Single Statement\n");}
+    /* | WHILE '(' expression ')' '{' inBlockscope '}'    {printf("While Multiple Statements\n");} */
+    ;
+
 
 forExpression:
-
     VARIABLE PLUS_ASSIGN expression     {printf("For statement Variable Plus Equal\n");}
     | VARIABLE MINUS_ASSIGN expression  {printf("For statement Variable Minus Equal\n");} 
     | VARIABLE MULTIPLY_ASSIGN expression   {printf("For statement Variable Multiply Equal\n");} 
@@ -245,8 +287,8 @@ forExpression:
     ;
 
 forStatement:
-    FOR '(' INT VARIABLE ASSIGN INTEGER_LITERAL ';' comparators ';' forExpression ')' statement   {printf("For Single Statement\n");}
-    | FOR '(' INT VARIABLE ASSIGN INTEGER_LITERAL ';' comparators ';' forExpression ')' '{' inBlockscope '}'   {printf("For Multiple Statements\n");}
+    FOR '(' INT VARIABLE ASSIGN INTEGER_LITERAL ';' comparators ';' forExpression ')' statementOrBlock   {printf("For Single Statement\n");}
+    /* | FOR '(' INT VARIABLE ASSIGN INTEGER_LITERAL ';' comparators ';' forExpression ')' '{' inBlockscope '}'   {printf("For Multiple Statements\n");} */
     ;
 
 switchStatement:
