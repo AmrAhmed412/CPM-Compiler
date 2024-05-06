@@ -83,7 +83,6 @@ inBlockscope:
 statement:                 
     declaration ';'           {printf("declaration\n");}
     | assignment ';'        {printf("Assignment\n");} 
-    /* | expression ';'        {printf("Expression\n");} */
     | ifStatement           {printf("If Statement\n");}
     | whileStatement        {printf("While Statement\n");}
     | forStatement          {printf("For Statement\n");} 
@@ -97,7 +96,6 @@ statement:
     | BREAK ';'        {printf("Break\n");}
     | CONTINUE ';'      {printf("Continue\n");}
     | error ';'     { yyerrok; }
-    /* |';'                {printf("Semicolon\n");} */
     ;  
 
 functionCall:               
@@ -239,21 +237,21 @@ ifStatement:
     ;
 
 ifComparators:
-    IF '(' comparators ')' statementOrBlock elseClause
-    | IF '(' comparators ')' statementOrBlock
+    IF '(' comparators ')' '{'inBlockscope '}'elseClause
+    | IF '(' comparators ')' '{'inBlockscope'}'
 
 ifVariable:
-    IF '(' VARIABLE ')' statementOrBlock elseClause
-    | IF '(' VARIABLE ')' statementOrBlock
+    IF '(' VARIABLE ')' '{'inBlockscope '}' elseClause
+    | IF '(' VARIABLE ')' '{'inBlockscope '}'
 
 
 elseClause:
-    ELSE statementOrBlock
+    ELSE '{'inBlockscope '}'
     ;
-statementOrBlock:
+/* statementOrBlock:
     statement
-    | '{' inBlockscope '}'
-    ;
+    |  inBlockscope 
+    ; */
 
     /* 1 shift/reduce and 1 reduce/reduce
     matchedIf:
@@ -273,8 +271,8 @@ ifComparators:
 
     
 whileStatement:
-    WHILE '(' expression ')' statementOrBlock      {printf("While Single Statement\n");}
-    /* | WHILE '(' expression ')' '{' inBlockscope '}'    {printf("While Multiple Statements\n");} */
+    WHILE '(' expression ')' statement      {printf("While Single Statement\n");}
+    | WHILE '(' expression ')' '{' inBlockscope '}'    {printf("While Multiple Statements\n");}
     ;
 
 
@@ -287,8 +285,8 @@ forExpression:
     ;
 
 forStatement:
-    FOR '(' INT VARIABLE ASSIGN INTEGER_LITERAL ';' comparators ';' forExpression ')' statementOrBlock   {printf("For Single Statement\n");}
-    /* | FOR '(' INT VARIABLE ASSIGN INTEGER_LITERAL ';' comparators ';' forExpression ')' '{' inBlockscope '}'   {printf("For Multiple Statements\n");} */
+    FOR '(' INT VARIABLE ASSIGN INTEGER_LITERAL ';' comparators ';' forExpression ')' statement   {printf("For Single Statement\n");}
+    | FOR '(' INT VARIABLE ASSIGN INTEGER_LITERAL ';' comparators ';' forExpression ')' '{' inBlockscope '}'   {printf("For Multiple Statements\n");}
     ;
 
 switchStatement:
