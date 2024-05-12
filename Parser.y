@@ -6,7 +6,9 @@
 	#include <stdarg.h>
 	#include <string.h>	
     #include <stdbool.h>
-    
+    // #include "linked_list.h"
+    // #include "./stack.h"
+
 
 %}
 %union{
@@ -48,6 +50,7 @@
         //Assignment Operator   
 %token ASSIGN PLUS_ASSIGN MINUS_ASSIGN MULTIPLY_ASSIGN DIVIDE_ASSIGN INCREMENT DECREMENT
 
+
 // Associativity
 %left ASSIGN
 %left GREATER LESS
@@ -58,13 +61,22 @@
 %left MULTIPLY DIVIDE
 %left PLUS_ASSIGN MINUS_ASSIGN MULTIPLY_ASSIGN DIVIDE_ASSIGN 
 
-
+ 
 
 %%
 
 program:              {printf("Empty Program ;-;\n");}      
-    | programStatements     {printf("Program Finished\n");}
-    ; 
+    | programStatements     {   head->name = "test";
+                                printf("rabena yente2em");
+                                head->datatype = "int";
+                                head->type = "variable";
+                                head->value = "5";
+                                head->lineNo = 1;
+                                head->next = NULL;
+                                push(stack, head);
+                                displayList(head);
+                                printf(stack->top->name);
+                            }; 
 
 programStatements:         
       statement programStatements                               {printf("Program statements\n");}
@@ -81,7 +93,16 @@ inBlockscope:
     ;
 
 statement:                 
-    declaration ';'           {printf("declaration\n");}
+    declaration ';'           {head->name = "test";
+                                printf("rabena yente2em");
+                                head->datatype = "int";
+                                head->type = "variable";
+                                head->value = "5";
+                                head->lineNo = 1;
+                                head->next = NULL;
+                                push(stack, head);
+                                displayList(head);
+                                printf(stack->top->name);}
     | assignment ';'        {printf("Assignment\n");} 
     | ifStatement           {printf("If Statement\n");}
     | whileStatement        {printf("While Statement\n");}
@@ -121,12 +142,12 @@ enumValues:
     ;
 
 parameters:                 
-    typeSpecifier VARIABLE      {printf("Parameters\n");}
+    typeSpecifier VARIABLE      {printf("Parameters\n");} 
     | parameters ',' typeSpecifier VARIABLE     {printf("Multiple Parameters\n");}
     ;
 
 declaration:
-    typeSpecifier VARIABLE     {printf("Declaration with no assignment\n");}
+    typeSpecifier VARIABLE     {printf("Declaration\n");} 
     | typeSpecifier VARIABLE ASSIGN expression  {printf("Declaration with Assignment\n");}
     | ENUM VARIABLE VARIABLE                {printf("Enum Declaration\n");}
     | ENUM VARIABLE VARIABLE ASSIGN VARIABLE  {printf("Enum Declaration with Assignment\n");}
@@ -312,7 +333,6 @@ repeatUntilStatement:
 
 int main() {
     yyparse();
-
     return 0;
 }
 
