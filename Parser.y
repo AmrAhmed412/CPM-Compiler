@@ -5,27 +5,59 @@
 	#include <stdlib.h>
 	#include <stdarg.h>
 	#include <string.h>	
-    #include <stdbool.h>
-    // #include "linked_list.h"
-    // #include "./stack.h"
+    // #include <stdbool.h>
+    #include "stack.h"
+    #include "linked_list.h"
+    #include "utils.h"
+    
+    // struct terminal_values {
+    // int value_type;
+    // char* var_type;
+    // union {
+    //     char* var_val;
+    //     int integer_val;
+    //     float float_val;
+    //     char* string_val;
+    //     char char_val;
+    //     int bool_val; 
+    // } value;
+    // };
 
+    // int boolchecker(struct terminal_values var); 
+
+    int line=1;
 
 %}
 %union{
+    char* type;                 /* data type */
 	int integerval;               /* integer value */
 	float floatval;               /* float Value */
     char * stringval;             /* string value */
 	char  charval;               /* character value */
 	char * varval ;                    	/* VARIABLE Value */
-    bool boolval;               /* boolean value */
+    int boolval;               /* boolean value */
+    int compare;              /* comparison value */
+
+    struct  {
+        int value_type;
+        char* var_type; 
+        union {
+            char* var_val;
+            int integer_val;
+            float float_val;
+            char* string_val;
+            char char_val;
+            int bool_val; 
+        } value;
+    } terminal_values; /* terminal values */
+
 }
         //Data Types
-%token  INT FLOAT STRING CHAR CONST ENUM VOID BOOL
-
+%token <type> INT FLOAT STRING CHAR CONST VOID BOOL 
+%token ENUM
         //Keywords
 %token IF ELSE WHILE FOR SWITCH CASE DEFAULT BREAK CONTINUE RETURN REPEAT UNTIL
         
-
 
         //Values     
 %token  <stringval> STRING_LITERAL 
@@ -35,6 +67,10 @@
 %token  <boolval> BOOLEAN_TRUE 
 %token  <boolval> BOOLEAN_FALSE 
 
+%type <type> typeSpecifier
+%type <terminal_values> values
+%type <terminal_values> variableValue
+%type <compare> comparators
         //Variable
 %token  <varval>VARIABLE
 
@@ -66,26 +102,24 @@
 %%
 
 program:              {printf("Empty Program ;-;\n");}      
-    | programStatements     {   head->name = "test";
-                                printf("rabena yente2em");
-                                head->datatype = "int";
-                                head->type = "variable";
-                                head->value = "5";
-                                head->lineNo = 1;
-                                head->next = NULL;
-                                push(stack, head);
-                                displayList(head);
-                                printf(stack->top->name);
-                            }; 
+    | programStatements     { printf("Program\n");};                  
 
 programStatements:         
       statement programStatements                               {printf("Program statements\n");}
-    | typeSpecifier VARIABLE '(' parameters ')' '{' inBlockscope '}' programStatements {printf("Function Declaration\n");} 
-    | typeSpecifier VARIABLE '('')' '{' inBlockscope '}'  programStatements {printf("Function Declaration with no parameters\n");}
-    | typeSpecifier VARIABLE '(' parameters ')' '{' inBlockscope '}'  {printf("Function Declaration\n");} 
-    | typeSpecifier VARIABLE '('')' '{' inBlockscope '}'   {printf("Function Declaration with no parameters\n");}      
+    | typeSpecifier VARIABLE '(' parameters ')' openScope  inBlockscope closeScope programStatements {printf("Function Declaration\n");} 
+    | typeSpecifier VARIABLE '('')' openScope  inBlockscope closeScope  programStatements {printf("Function Declaration with no parameters\n");}
+    | typeSpecifier VARIABLE '(' parameters ')' openScope  inBlockscope closeScope  {printf("Function Declaration\n");} 
+    | typeSpecifier VARIABLE '('')' openScope  inBlockscope closeScope   {printf("Function Declaration with no parameters\n");}      
     | statement
     ;
+
+openScope:
+    '{' {printf("Open Scope\n");}
+    ;
+closeScope:
+    '}' {printf("Close Scope\n");}
+    ;
+
 
 inBlockscope:
       inBlockscope statement   {printf("Block Scope\n");}
@@ -93,16 +127,7 @@ inBlockscope:
     ;
 
 statement:                 
-    declaration ';'           {head->name = "test";
-                                printf("rabena yente2em");
-                                head->datatype = "int";
-                                head->type = "variable";
-                                head->value = "5";
-                                head->lineNo = 1;
-                                head->next = NULL;
-                                push(stack, head);
-                                displayList(head);
-                                printf(stack->top->name);}
+    declaration ';'           {printf("Declaration\n");}
     | assignment ';'        {printf("Assignment\n");} 
     | ifStatement           {printf("If Statement\n");}
     | whileStatement        {printf("While Statement\n");}
@@ -133,7 +158,7 @@ callParameters:
     ; */
 
 enumStatement:             
-    ENUM VARIABLE '{' enumValues '}' ';' {printf("Enum Statement\n");}
+    ENUM VARIABLE openScope  enumValues closeScope ';' {printf("Enum Statement\n");}
     ;
 
 enumValues:                 
@@ -147,20 +172,34 @@ parameters:
     ;
 
 declaration:
-    typeSpecifier VARIABLE     {printf("Declaration\n");} 
-    | typeSpecifier VARIABLE ASSIGN expression  {printf("Declaration with Assignment\n");}
-    | ENUM VARIABLE VARIABLE                {printf("Enum Declaration\n");}
-    | ENUM VARIABLE VARIABLE ASSIGN VARIABLE  {printf("Enum Declaration with Assignment\n");}
+    typeSpecifier VARIABLE                                          {
+                                                                        struct Node *var = searchStack($2);
+                                                                        if(var!=NULL){
+                                                                            printf("Variable already declared\n");
+                                                                        }else{
+                                                                            createNode($2,$1,"variable",NULL,line);
+                                                                            
+                                                                            if (isEmpty()==1){
+                                                                                push(getHead());
+                                                                                printf("current Stack top name: %s\n",peek()->name);
+                                                                            }
+                                                                        }
+                                                                        line++;
+                                                                    }
+
+    | typeSpecifier VARIABLE ASSIGN expression                      {printf("Declaration with Assignment\n");}
+    | ENUM VARIABLE VARIABLE                                        {printf("Enum Declaration\n");}
+    | ENUM VARIABLE VARIABLE ASSIGN VARIABLE                        {printf("Enum Declaration with Assignment\n");}
     ;
 
 typeSpecifier:
-    INT         {printf("int\n");}
-    | FLOAT     {printf("Float\n");}                          
-    | STRING    {printf("String\n");} 
-    | CHAR      {printf("Char\n");} 
-    | CONST     {printf("Const\n");}
-    | VOID      {printf("Void\n");}
-    | BOOL      {printf("Bool\n");}
+    INT         {$$="int";printf("int\n");}
+    | FLOAT     {$$="float"; printf("Float\n");}                          
+    | STRING    {$$="string"; printf("String\n");} 
+    | CHAR      {$$="char"; printf("Char\n");} 
+    | CONST     {$$="const"; printf("Const\n");}
+    | VOID      {$$="void"; printf("Void\n");}
+    | BOOL      {$$="bool"; printf("Bool\n");}
     ;
 
 assignment:
@@ -178,21 +217,6 @@ crements:
     | INCREMENT VARIABLE            {printf("Increment before Variable \n");}
     | DECREMENT VARIABLE            {printf("Decrement before Variable \n");}
     ;
-
-/* expression:
-    Mathematicalexpressions         {printf("Expression\n");}
-    | comparators                   {printf("Comparators\n");}                   
-    | '(' expression ')'            {printf("Bracket Expression\n");}
-    | values                        {printf("Values\n");}
-    ; */
-
-/* Mathematicalexpressions:
-    expression PLUS expression          {printf("Mathematical Expressions\n");}
-    | expression MINUS expression       {printf("Minus Expressions\n");}
-    | expression MULTIPLY expression    {printf("Multiply Expressions\n");}
-    | expression DIVIDE expression      {printf("Divide Expressions\n");}
-    | crements                          {printf("Crements\n");}
-    ; */
 
 expression:
     expression PLUS term            {printf("Addition\n");}
@@ -214,86 +238,328 @@ factor:
     ;
 
 comparators:
-    values EQUAL values         {printf("Equal\n");}
-    | values NOT_EQUAL values   {printf("Not Equal\n");}
-    | values GREATER values     {printf("Greater\n");}
-    | values LESS values        {printf("Less\n");}
-    | values GREATER_EQUAL values   {printf("Greater Equal\n");}
-    | values LESS_EQUAL values      {printf("Less Equal\n");}
-    | VARIABLE AND VARIABLE             {printf("And\n");}
-    | VARIABLE OR VARIABLE              {printf("Or\n");}
-    | NOT VARIABLE                    {printf("Not\n");}
+    values EQUAL values         {
+                                     char* value1;
+                                        char* value2;
+                                        if ($1.value_type==2)
+                                        {  
+                                            sprintf(value1,"%d",$1.value.integer_val);
+                                        }
+                                        if ($1.value_type==6)
+                                        {  
+                                            sprintf(value1,"%d",$1.value.bool_val);
+                                        }
+                                        if ($1.value_type==3)
+                                        {  
+                                            sprintf(value1,"%f",$1.value.float_val);
+                                        }
+                                        if ($3.value_type==2)
+                                        {  
+                                            sprintf(value2,"%d",$3.value.integer_val);
+                                        }
+                                        if ($3.value_type==6)
+                                        {  
+                                            sprintf(value2,"%d",$3.value.bool_val);
+                                        }
+                                        if ($3.value_type==3)
+                                        {  
+                                            sprintf(value2,"%f",$3.value.float_val);
+                                        }
+                                        int res = cmp(1,$1.value_type,value1,$1.var_type,$3.value_type,value2,$3.var_type);
+                                        if (res!=-1)
+                                        {
+                                            $$=res;
+                                        }
+                                        else
+                                        {
+                                            printf("Comparison not possible\n");
+                                        };
+                                }
+    | values NOT_EQUAL values   {  char* value1;
+                                        char* value2;
+                                        if ($1.value_type==2)
+                                        {  
+                                            sprintf(value1,"%d",$1.value.integer_val);
+                                        }
+                                        if ($1.value_type==6)
+                                        {  
+                                            sprintf(value1,"%d",$1.value.bool_val);
+                                        }
+                                        if ($1.value_type==3)
+                                        {  
+                                            sprintf(value1,"%f",$1.value.float_val);
+                                        }
+                                        if ($3.value_type==2)
+                                        {  
+                                            sprintf(value2,"%d",$3.value.integer_val);
+                                        }
+                                        if ($3.value_type==6)
+                                        {  
+                                            sprintf(value2,"%d",$3.value.bool_val);
+                                        }
+                                        if ($3.value_type==3)
+                                        {  
+                                            sprintf(value2,"%f",$3.value.float_val);
+                                        }
+                                        int res = cmp(2,$1.value_type,value1,$1.var_type,$3.value_type,value2,$3.var_type);
+                                        if (res!=-1)
+                                        {
+                                            $$=res;
+                                        }
+                                        else
+                                        {
+                                            printf("Comparison not possible\n");
+                                        }}
+    | values GREATER values     {  char* value1;
+                                        char* value2;
+                                        if ($1.value_type==2)
+                                        {  
+                                            sprintf(value1,"%d",$1.value.integer_val);
+                                        }
+                                        if ($1.value_type==6)
+                                        {  
+                                            sprintf(value1,"%d",$1.value.bool_val);
+                                        }
+                                        if ($1.value_type==3)
+                                        {  
+                                            sprintf(value1,"%f",$1.value.float_val);
+                                        }
+                                        if ($3.value_type==2)
+                                        {  
+                                            sprintf(value2,"%d",$3.value.integer_val);
+                                        }
+                                        if ($3.value_type==6)
+                                        {  
+                                            sprintf(value2,"%d",$3.value.bool_val);
+                                        }
+                                        if ($3.value_type==3)
+                                        {  
+                                            sprintf(value2,"%f",$3.value.float_val);
+                                        }
+                                        int res = cmp(3,$1.value_type,value1,$1.var_type,$3.value_type,value2,$3.var_type);
+                                        if (res!=-1)
+                                        {
+                                            $$=res;
+                                        }
+                                        else
+                                        {
+                                            printf("Comparison not possible\n");
+                                        }}
+    | values LESS values        {  char* value1;
+                                        char* value2;
+                                        if ($1.value_type==2)
+                                        {  
+                                            sprintf(value1,"%d",$1.value.integer_val);
+                                        }
+                                        if ($1.value_type==6)
+                                        {  
+                                            sprintf(value1,"%d",$1.value.bool_val);
+                                        }
+                                        if ($1.value_type==3)
+                                        {  
+                                            sprintf(value1,"%f",$1.value.float_val);
+                                        }
+                                        if ($3.value_type==2)
+                                        {  
+                                            sprintf(value2,"%d",$3.value.integer_val);
+                                        }
+                                        if ($3.value_type==6)
+                                        {  
+                                            sprintf(value2,"%d",$3.value.bool_val);
+                                        }
+                                        if ($3.value_type==3)
+                                        {  
+                                            sprintf(value2,"%f",$3.value.float_val);
+                                        }
+                                        int res = cmp(4,$1.value_type,value1,$1.var_type,$3.value_type,value2,$3.var_type);
+                                        if (res!=-1)
+                                        {
+                                            $$=res;
+                                        }
+                                        else
+                                        {
+                                            printf("Comparison not possible\n");
+                                        }}
+    | values GREATER_EQUAL values   {
+          char* value1;
+                                        char* value2;
+                                        if ($1.value_type==2)
+                                        {  
+                                            sprintf(value1,"%d",$1.value.integer_val);
+                                        }
+                                        if ($1.value_type==6)
+                                        {  
+                                            sprintf(value1,"%d",$1.value.bool_val);
+                                        }
+                                        if ($1.value_type==3)
+                                        {  
+                                            sprintf(value1,"%f",$1.value.float_val);
+                                        }
+                                        if ($3.value_type==2)
+                                        {  
+                                            sprintf(value2,"%d",$3.value.integer_val);
+                                        }
+                                        if ($3.value_type==6)
+                                        {  
+                                            sprintf(value2,"%d",$3.value.bool_val);
+                                        }
+                                        if ($3.value_type==3)
+                                        {  
+                                            sprintf(value2,"%f",$3.value.float_val);
+                                        }
+                                        int res = cmp(5,$1.value_type,value1,$1.var_type,$3.value_type,value2,$3.var_type);
+                                        if (res!=-1)
+                                        {
+                                            $$=res;
+                                        }
+                                        else
+                                        {
+                                            printf("Comparison not possible\n");
+                                        }
+    }
+    | values LESS_EQUAL values      {
+                                        char* value1;
+                                        char* value2;
+                                        if ($1.value_type==2)
+                                        {  
+                                            sprintf(value1,"%d",$1.value.integer_val);
+                                        }
+                                        if ($1.value_type==6)
+                                        {  
+                                            sprintf(value1,"%d",$1.value.bool_val);
+                                        }
+                                        if ($1.value_type==3)
+                                        {  
+                                            sprintf(value1,"%f",$1.value.float_val);
+                                        }
+                                        if ($3.value_type==2)
+                                        {  
+                                            sprintf(value2,"%d",$3.value.integer_val);
+                                        }
+                                        if ($3.value_type==6)
+                                        {  
+                                            sprintf(value2,"%d",$3.value.bool_val);
+                                        }
+                                        if ($3.value_type==3)
+                                        {  
+                                            sprintf(value2,"%f",$3.value.float_val);
+                                        }
+                                        int res = cmp(6,$1.value_type,value1,$1.var_type,$3.value_type,value2,$3.var_type);
+                                        if (res!=-1)
+                                        {
+                                            $$=res;
+                                        }
+                                        else
+                                        {
+                                            printf("Comparison not possible\n");
+                                        }
+                                    }
+    | variableValue AND variableValue       { 
+                                                if (boolchecker($1.var_type,$1.value.var_val)==1 && boolchecker($3.var_type,$3.value.var_val)==1)
+                                                {
+                                                    $$=atoi($1.value.var_val) && atoi($3.value.var_val);
+                                                } else
+                                                {
+                                                    printf("Or Operator can only be used with boolean values\n");
+                                                }
+                                            }
+    | variableValue OR variableValue        {
+                                                if (boolchecker($1.var_type,$1.value.var_val)==1 && boolchecker($3.var_type,$3.value.var_val)==1)
+                                                {
+                                                    $$=atoi($1.value.var_val) || atoi($3.value.var_val);
+                                                } else
+                                                {
+                                                    printf("Or Operator can only be used with boolean values\n");
+                                                }
+                                            }
+
+                                        
+    | NOT variableValue                     {
+                                                if (boolchecker($2.var_type,$2.value.var_val)==1)
+                                                {
+                                                    $$=!$2.value.var_val;
+                                                }else
+                                                {
+                                                    printf("Not Operator can only be used with boolean values\n");
+                                                }
+                                            }
     ;
 
 values:
-     VARIABLE           {printf("Variable\n");}
-    | INTEGER_LITERAL   {printf("Integer Literal\n");}              
-    | FLOAT_LITERAL     {printf("Float Literal\n");} 
-    | STRING_LITERAL    {printf("String Literal\n");} 
-    | CHAR_LITERAL      {printf("Char Literal\n");}
-    | BOOLEAN_TRUE      {printf("Boolean True\n");}
-    | BOOLEAN_FALSE     {printf("Boolean False\n");}
+    variableValue       {
+                            $$.value_type = $1.value_type;
+                            $$.value.var_val = $1.value.var_val;
+                            $$.var_type = $1.var_type;
+                        }        
+    | INTEGER_LITERAL   {
+                            $$.value_type = 2;
+                            $$.value.integer_val = $1;
+                        }              
+    | FLOAT_LITERAL     {
+                            $$.value_type = 3;
+                            $$.value.float_val = $1;
+                        } 
+    | STRING_LITERAL    {
+                            $$.value_type = 4;
+                            $$.value.string_val = $1;
+                        } 
+    | CHAR_LITERAL      {
+                            $$.value_type = 5;
+                            $$.value.char_val = $1;
+                        }
+    | BOOLEAN_TRUE      {
+                            $$.value_type = 6;
+                            $$.value.bool_val = 1;
+                        }
+    | BOOLEAN_FALSE     {
+                            $$.value_type = 6;
+                            $$.value.bool_val = 0;
+                        }
     ;
 
-
-/* ifStatement:
-    IF '(' comparators ')' statement    {printf("If Single Statement with comparators\n");} 
-    | IF '(' comparators ')' statement  ELSE statement  {printf("If Else Single Statement with comparators\n");}
-    | IF '(' comparators ')' '{' inBlockscope '}'  {printf("If Multiple Statements with comparators\n");}
-    | IF '(' comparators ')' '{' inBlockscope '}' ELSE '{' inBlockscope '}'   {printf("If Else Multiple Statements with comparators\n");}
-    | IF '(' comparators ')' '{' inBlockscope '}' ELSE statement   {printf("If Multiple Statements Else Single Statement with comparators\n");}
-    | IF '(' comparators ')' statement ELSE '{' inBlockscope '}'   {printf("If Single Statement Else Multiple Statements with comparators\n");}
-    | IF '(' VARIABLE ')' statement    {printf("If Single Statement with VARIABLE\n");} 
-    | IF '(' VARIABLE ')' statement  ELSE statement  {printf("If Else Single Statement with VARIABLE\n");}
-    | IF '(' VARIABLE ')' '{' inBlockscope '}'  {printf("If Multiple Statements with VARIABLE\n");}
-    | IF '(' VARIABLE ')' '{' inBlockscope '}' ELSE '{' inBlockscope '}'   {printf("If Else Multiple Statements with VARIABLE\n");}
-    | IF '(' VARIABLE ')' '{' inBlockscope '}' ELSE statement   {printf("If Multiple Statements Else Single Statement with VARIABLE\n");}
-    | IF '(' VARIABLE ')' statement ELSE '{' inBlockscope '}'   {printf("If Single Statement Else Multiple Statements with VARIABLE\n");}
-    ; */
-
-
+variableValue:
+    VARIABLE       {
+                            $$.value_type = 1;
+                            struct Node *var = searchStack($1);
+                            $$.value.var_val ="N/A";
+                            $$.var_type="N/A";
+                            if(var==NULL){
+                                printf("Variable not declared\n");
+                            }
+                            else
+                            {
+                                if (var->value!=NULL)
+                                {
+                                    $$.value.var_val =var->value; 
+                                    $$.var_type=var->datatype; 
+                                }else
+                                {
+                                    printf("Variable not initialized\n");
+                                }
+                            }
+                        }       
+;
 ifStatement:
     ifComparators
     | ifVariable
     ;
 
 ifComparators:
-    IF '(' comparators ')' '{'inBlockscope '}'elseClause
-    | IF '(' comparators ')' '{'inBlockscope'}'
+    IF '(' comparators ')' openScope inBlockscope closeScope elseClause
+    | IF '(' comparators ')' openScope inBlockscope closeScope
 
 ifVariable:
-    IF '(' VARIABLE ')' '{'inBlockscope '}' elseClause
-    | IF '(' VARIABLE ')' '{'inBlockscope '}'
+    IF '(' VARIABLE ')' openScope inBlockscope closeScope elseClause
+    | IF '(' VARIABLE ')' openScope inBlockscope closeScope
 
 
 elseClause:
-    ELSE '{'inBlockscope '}'
+    ELSE openScope inBlockscope closeScope
     ;
-/* statementOrBlock:
-    statement
-    |  inBlockscope 
-    ; */
-
-    /* 1 shift/reduce and 1 reduce/reduce
-    matchedIf:
-    IF '(' comparators ')' matchedIf ELSE matchedIf
-    |IF '(' VARIABLE ')' matchedIf ELSE matchedIf
-    |statementForIf
-    ;
-    
-
-ifComparators:
-    IF '(' comparators ')' matchedIf ELSE statement
-    |IF '(' comparators ')' '{' inBlockscope '}' elseClause
-    | IF '(' comparators ')' statementForIf
-    |IF '(' comparators ')' matchedIf 
-    | IF '(' comparators ')' '{' inBlockscope '}'
-    */
-
     
 whileStatement:
     WHILE '(' expression ')' statement      {printf("While Single Statement\n");}
-    | WHILE '(' expression ')' '{' inBlockscope '}'    {printf("While Multiple Statements\n");}
+    | WHILE '(' expression ')' openScope  inBlockscope closeScope    {printf("While Multiple Statements\n");}
     ;
 
 
@@ -307,18 +573,18 @@ forExpression:
 
 forStatement:
     FOR '(' INT VARIABLE ASSIGN INTEGER_LITERAL ';' comparators ';' forExpression ')' statement   {printf("For Single Statement\n");}
-    | FOR '(' INT VARIABLE ASSIGN INTEGER_LITERAL ';' comparators ';' forExpression ')' '{' inBlockscope '}'   {printf("For Multiple Statements\n");}
+    | FOR '(' INT VARIABLE ASSIGN INTEGER_LITERAL ';' comparators ';' forExpression ')' openScope  inBlockscope closeScope   {printf("For Multiple Statements\n");}
     ;
 
 switchStatement:
-    SWITCH '(' VARIABLE ')' '{' caseStatements '}'  {printf("Switch Statement\n");}
+    SWITCH '(' VARIABLE ')' openScope  caseStatements closeScope  {printf("Switch Statement\n");}
     ;
 
 caseStatements:
     CASE INTEGER_LITERAL ':' statement  BREAK ';' caseStatements  {printf("Case Statement single statement\n");}
     | DEFAULT ':' statement  BREAK ';'    {printf("Default Statement single statement\n");}
-    | CASE INTEGER_LITERAL ':' '{'inBlockscope BREAK ';' '}' caseStatements   {printf("Case Statement multiple statements\n");}
-    | DEFAULT ':' '{'inBlockscope BREAK ';' '}'   {printf("Default Statement multiple statements\n");}
+    | CASE INTEGER_LITERAL ':' openScope inBlockscope BREAK ';' closeScope caseStatements   {printf("Case Statement multiple statements\n");}
+    | DEFAULT ':' openScope inBlockscope BREAK ';' closeScope   {printf("Default Statement multiple statements\n");}
     ;
 
 returnStatement:
@@ -327,12 +593,14 @@ returnStatement:
     ;
 
 repeatUntilStatement:
-    REPEAT '{' inBlockscope '}' UNTIL '(' comparators ')' ';'  {printf("Repeat Until Statement scope\n");}
+    REPEAT openScope  inBlockscope closeScope UNTIL '(' comparators ')' ';'  {printf("Repeat Until Statement scope\n");}
 ;
 %%
 
 int main() {
+    initializeStack();
     yyparse();
+    displayList();
     return 0;
 }
 
@@ -340,3 +608,21 @@ int yyerror(char *s) {
     printf("\nERROR: %s\n", s);
     return 0;
 }
+
+/* int boolchecker(struct terminal_values var){
+    if (strcmp(var.value.var_val,"N/A")!=0)
+    {
+        if (strcmp(var.var_type,"bool")==0)
+        {
+            return 1;
+        }
+        else if (strcmp(var.var_type,"int")==0)
+        {   
+            if (atoi(var.value.var_val)==0 || atoi(var.value.var_val)==1)
+            {
+                return 1;
+            }
+        }
+    }
+    return 0;
+} */

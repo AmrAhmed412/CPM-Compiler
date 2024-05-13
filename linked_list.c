@@ -2,8 +2,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// Function to create a new node with the given data
-struct Node *createNode(char *name, char *datatype, char *type, char *value, int lineNo)
+struct Node *head = NULL;
+struct Node *prevHead = NULL;
+// Function to create a new node with the given data and insert it at the end of the linked list
+void createNode(char *name, char *datatype, char *type, char *value, int lineNo)
 {
     struct Node *newNode = (struct Node *)malloc(sizeof(struct Node));
     if (newNode == NULL)
@@ -17,28 +19,13 @@ struct Node *createNode(char *name, char *datatype, char *type, char *value, int
     newNode->value = value;
     newNode->lineNo = lineNo;
     newNode->next = NULL; // Initialize the next pointer to NULL
-    return newNode;
-}
-
-// Function to insert a new node at the beginning of the linked list
-void insertAtBeginning(struct Node **head, char *name, char *datatype, char *type, char *value, int lineNo)
-{
-    struct Node *newNode = createNode(name, datatype, type, value, lineNo);
-    newNode->next = *head;
-    *head = newNode;
-}
-
-// Function to insert a new node at the end of the linked list
-void insertAtEnd(struct Node **head, char *name, char *datatype, char *type, char *value, int lineNo)
-{
-    struct Node *newNode = createNode(name, datatype, type, value, lineNo);
-    if (*head == NULL)
+    if (head == NULL)
     {
-        *head = newNode;
+        head = newNode;
     }
     else
     {
-        struct Node *current = *head;
+        struct Node *current = head;
         while (current->next != NULL)
         {
             current = current->next;
@@ -48,9 +35,9 @@ void insertAtEnd(struct Node **head, char *name, char *datatype, char *type, cha
 }
 
 // Function to delete a node with the given data from the linked list
-void deleteNode(struct Node **head, char *name)
+void deleteNode(char *name)
 {
-    struct Node *current = *head;
+    struct Node *current = head;
     struct Node *prev = NULL;
 
     while (current != NULL && current->name != name)
@@ -68,7 +55,7 @@ void deleteNode(struct Node **head, char *name)
     if (prev == NULL)
     {
         // Node to be deleted is the head node
-        *head = current->next;
+        head = current->next;
     }
     else
     {
@@ -79,20 +66,40 @@ void deleteNode(struct Node **head, char *name)
 }
 
 // Function to display the linked list
-void displayList(struct Node *head)
+void displayList()
 {
     struct Node *current = head;
+    printf("current name:%s\n", current->name);
     printf("NAME, DATATYPE, TYPE, VALUE, LINE NO\n");
     while (current != NULL)
     {
-        printf("[%s, %s, %s, %s, %s] -> ", current->name, current->datatype, current->type, current->value, current->lineNo);
+        // printf("inside while\n");
+        // printf("current->name: %s\n", current->name);
+        // printf("current->datatype: %s\n", current->datatype);
+        // printf("current->type: %s\n", current->type);
+        // printf("current->value: %s\n", current->value);
+        // printf("current->lineNo: %d\n", current->lineNo);
+
+        printf("%s, %s, %s, %s, %d -> \n", current->name, current->datatype, current->type, current->value, current->lineNo);
+        current = current->next;
+    }
+    printf("NULL\n");
+}
+
+void displayListStack(struct Node *node)
+{
+    struct Node *current = node;
+    printf("NAME, DATATYPE, TYPE, VALUE, LINE NO\n");
+    while (current != NULL)
+    {
+        printf("%s, %s, %s, %s, %d", current->name, current->datatype, current->type, current->value, current->lineNo);
         current = current->next;
     }
     printf("NULL\n");
 }
 
 // Function to free memory allocated for the linked list
-void freeList(struct Node *head)
+void freeList()
 {
     struct Node *current = head;
     while (current != NULL)
@@ -103,7 +110,7 @@ void freeList(struct Node *head)
     }
 }
 
-struct Node *search(struct Node *head, char *name)
+struct Node *search(char *name)
 {
     struct Node *current = head;
     while (current != NULL)
@@ -116,4 +123,16 @@ struct Node *search(struct Node *head, char *name)
         current = current->next;
     }
     printf("Node with name %s not found\n", name);
+    return NULL;
+}
+
+void updateHead()
+{
+    prevHead = head;
+    head = NULL;
+}
+
+struct Node *getHead()
+{
+    return head;
 }

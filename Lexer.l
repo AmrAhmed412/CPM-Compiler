@@ -44,8 +44,8 @@
 "const"             { return CONST; }
 "enum"              { return ENUM; }
 "bool"              { return BOOL; }
-"true"              { yylval.boolval = true; return BOOLEAN_TRUE; }
-"false"             { yylval.boolval = false; return BOOLEAN_FALSE; }
+"true"              { yylval.boolval = 1; return BOOLEAN_TRUE; }
+"false"             { yylval.boolval = 0; return BOOLEAN_FALSE; }
 
         /* Variable names*/
 
