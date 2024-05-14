@@ -42,7 +42,6 @@
 "string"            { return STRING; }
 "char"              { return CHAR; }
 "const"             { return CONST; }
-"enum"              { return ENUM; }
 "bool"              { return BOOL; }
 "true"              { yylval.boolval = 1; return BOOLEAN_TRUE; }
 "false"             { yylval.boolval = 0; return BOOLEAN_FALSE; }
@@ -75,8 +74,6 @@
 "-="               { return MINUS_ASSIGN; }
 "*="               { return MULTIPLY_ASSIGN; }
 "/="               { return DIVIDE_ASSIGN; }
-"++"               { return INCREMENT; }
-"--"               { return DECREMENT; }
 
 "&&"               { return AND; }
 "||"               { return OR; }

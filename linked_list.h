@@ -15,7 +15,7 @@ struct Node
 // Function prototypes for linked list operations
 
 // Function to create a new node with the given data
-void createNode(char *name, char *datatype, char *type, char *value, int lineNo);
+void createNode(char *name, char *datatype, char *type, void *value, int lineNo);
 
 // Function to delete a node with the given data from the linked list
 void deleteNode(char *name);
@@ -28,7 +28,8 @@ void displayListStack(struct Node *head);
 // Function to free memory allocated for the linked list
 void freeList();
 
-void updateHead();
+void Head_for_push();
+void Head_for_pop();
 
 struct Node *search(char *name);
 struct Node *getHead();

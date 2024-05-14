@@ -39,22 +39,22 @@
     int compare;              /* comparison value */
 
     struct  {
-        int value_type;
-        char* var_type; 
-        union {
-            char* var_val;
-            int integer_val;
-            float float_val;
-            char* string_val;
-            char char_val;
-            int bool_val; 
-        } value;
-    } terminal_values; /* terminal values */
+    int value_type;
+    char* var_type;
+    union {
+        char* var_val;
+        int integer_val;
+        float float_val;
+        char* string_val;
+        char char_val;
+        int bool_val; 
+    } value;
+    }terminal_values; /* terminal values */
 
 }
         //Data Types
 %token <type> INT FLOAT STRING CHAR CONST VOID BOOL 
-%token ENUM
+/* %token ENUM */
         //Keywords
 %token IF ELSE WHILE FOR SWITCH CASE DEFAULT BREAK CONTINUE RETURN REPEAT UNTIL
         
@@ -70,6 +70,9 @@
 %type <type> typeSpecifier
 %type <terminal_values> values
 %type <terminal_values> variableValue
+%type <terminal_values> factor
+%type <terminal_values> term
+%type <terminal_values> expression
 %type <compare> comparators
         //Variable
 %token  <varval>VARIABLE
@@ -84,7 +87,7 @@
 %token EQUAL NOT_EQUAL GREATER LESS GREATER_EQUAL LESS_EQUAL 
 
         //Assignment Operator   
-%token ASSIGN PLUS_ASSIGN MINUS_ASSIGN MULTIPLY_ASSIGN DIVIDE_ASSIGN INCREMENT DECREMENT
+%token ASSIGN PLUS_ASSIGN MINUS_ASSIGN MULTIPLY_ASSIGN DIVIDE_ASSIGN 
 
 
 // Associativity
@@ -106,18 +109,24 @@ program:              {printf("Empty Program ;-;\n");}
 
 programStatements:         
       statement programStatements                               {printf("Program statements\n");}
-    | typeSpecifier VARIABLE '(' parameters ')' openScope  inBlockscope closeScope programStatements {printf("Function Declaration\n");} 
-    | typeSpecifier VARIABLE '('')' openScope  inBlockscope closeScope  programStatements {printf("Function Declaration with no parameters\n");}
-    | typeSpecifier VARIABLE '(' parameters ')' openScope  inBlockscope closeScope  {printf("Function Declaration\n");} 
-    | typeSpecifier VARIABLE '('')' openScope  inBlockscope closeScope   {printf("Function Declaration with no parameters\n");}      
+    | typeSpecifier VARIABLE '(' parameters ')' '{'  inBlockscope '}' programStatements {printf("Function Declaration\n");} 
+    | typeSpecifier VARIABLE '('')' '{'   inBlockscope '}'  programStatements {printf("Function Declaration with no parameters\n");}
+    | typeSpecifier VARIABLE '(' parameters ')' '{'   inBlockscope '}'  {printf("Function Declaration\n");} 
+    | typeSpecifier VARIABLE '('')' '{' inBlockscope '}'   {printf("Function Declaration with no parameters\n");}      
     | statement
     ;
 
 openScope:
-    '{' {printf("Open Scope\n");}
+    '{' {Head_for_push();
+        push(getHead());}
     ;
 closeScope:
-    '}' {printf("Close Scope\n");}
+    '}' {   
+            printf("==============Symbol Table before popping==============\n");
+            displayList();
+            pop();
+            Head_for_pop();
+        }
     ;
 
 
@@ -136,7 +145,7 @@ statement:
     | returnStatement       {printf("Return Statement\n");}
     | repeatUntilStatement  {printf("Repeat Until Statement from statement\n");}
     | functionCall       {printf("Function Call\n");}
-    | enumStatement         {printf("Enum Statement\n");}
+    /* | enumStatement         {printf("Enum Statement\n");} */
     | VARIABLE ASSIGN functionCall       {printf("Function Call with Assignment\n");}
     | typeSpecifier VARIABLE ASSIGN functionCall     {printf("Function Call with Assignment\n");}  
     | BREAK ';'        {printf("Break\n");}
@@ -152,18 +161,6 @@ functionCall:
 callParameters:             
     values    {printf("Parameter\n");}
     | callParameters ',' values   {printf("Multiple  Parameters\n");}
-    ;
-
-/* functionDeclaration:        
-    ; */
-
-enumStatement:             
-    ENUM VARIABLE openScope  enumValues closeScope ';' {printf("Enum Statement\n");}
-    ;
-
-enumValues:                 
-    VARIABLE {printf("Enum Value\n");}
-    | enumValues ',' VARIABLE   {printf("Multiple Enum Values\n");}
     ;
 
 parameters:                 
@@ -187,9 +184,22 @@ declaration:
                                                                         line++;
                                                                     }
 
-    | typeSpecifier VARIABLE ASSIGN expression                      {printf("Declaration with Assignment\n");}
-    | ENUM VARIABLE VARIABLE                                        {printf("Enum Declaration\n");}
-    | ENUM VARIABLE VARIABLE ASSIGN VARIABLE                        {printf("Enum Declaration with Assignment\n");}
+    | typeSpecifier VARIABLE ASSIGN expression                      {struct Node *var = searchStack($2);
+                                                                        if(var!=NULL){
+                                                                            printf("Variable already declared\n");
+                                                                        }else{
+                                                                            char value[1024];
+                                                                            sprintf(value,"%d",$4.value.integer_val);
+                                                                            createNode($2,$1,"variable",value,line);
+                                                                            free(value);
+                                                                            if (isEmpty()==1){
+                                                                                push(getHead());
+                                                                                printf("current Stack top name: %s\n",peek()->name);
+                                                                            }
+                                                                        }
+                                                                        line++;}
+    /* | ENUM VARIABLE VARIABLE                                        {printf("Enum Declaration\n");}
+    | ENUM VARIABLE VARIABLE ASSIGN VARIABLE                        {printf("Enum Declaration with Assignment\n");} */
     ;
 
 typeSpecifier:
@@ -203,77 +213,183 @@ typeSpecifier:
     ;
 
 assignment:
-    VARIABLE ASSIGN expression       {printf("Assignment\n");}
-    | VARIABLE PLUS_ASSIGN expression       {printf("Plus Assignment\n");}
-    | VARIABLE MINUS_ASSIGN expression      {printf("Minus Assignment\n");}
-    | VARIABLE MULTIPLY_ASSIGN expression   {printf("Multiply Assignment\n");}
-    | VARIABLE DIVIDE_ASSIGN expression     {printf("Divide Assignment\n");}
-    | crements                {printf("Crements\n");}
-    ;
-
-crements:
-    VARIABLE INCREMENT             {printf("Increment after Variable\n");}
-    | VARIABLE DECREMENT            {printf("Decrement after Variable \n");}
-    | INCREMENT VARIABLE            {printf("Increment before Variable \n");}
-    | DECREMENT VARIABLE            {printf("Decrement before Variable \n");}
+    VARIABLE ASSIGN expression              {
+                                                struct Node *var = searchStack($1);
+                                                if(var==NULL)
+                                                {
+                                                    printf("Variable not declared\n");
+                                                }
+                                                else
+                                                {
+                                                    char value[1024];
+                                                    sprintf(value,"%d",$3.value.integer_val);
+                                                    var->value=value;
+                                                    free(value);
+                                                    printf("Variable initialized\n");
+                                                }
+                                                line++;
+                                            }
+    | VARIABLE PLUS_ASSIGN expression       {
+                                                struct Node *var = searchStack($1);
+                                                if(var==NULL)
+                                                {
+                                                    printf("Variable not declared\n");
+                                                }
+                                                else
+                                                {
+                                                    if (var->value!=NULL)
+                                                    {
+                                                        char value[1024];
+                                                        sprintf(value,"%d",atoi(var->value)+$3.value.integer_val);
+                                                        var->value=value;
+                                                        free(value);
+                                                        printf("Variable initialized\n");
+                                                    }
+                                                    else
+                                                    {
+                                                        printf("Variable not initialized\n");
+                                                    }
+                                                }
+                                                line++;
+                                            }
+    | VARIABLE MINUS_ASSIGN expression      {
+                                                struct Node *var = searchStack($1);
+                                                if(var==NULL)
+                                                {
+                                                    printf("Variable not declared\n");
+                                                }
+                                                else
+                                                {
+                                                    if (var->value!=NULL)
+                                                    {
+                                                        char value[100];
+                                                        sprintf(value,"%d",atoi(var->value)-$3.value.integer_val);
+                                                        var->value=value;
+                                                        printf("Variable initialized\n");
+                                                    }
+                                                    else
+                                                    {
+                                                        printf("Variable not initialized\n");
+                                                    }
+                                                }
+                                                line++;
+                                            }       
+    
+    | VARIABLE MULTIPLY_ASSIGN expression   {
+                                                struct Node *var = searchStack($1);
+                                                if(var==NULL)
+                                                {
+                                                    printf("Variable not declared\n");
+                                                }
+                                                else
+                                                {
+                                                    if (var->value!=NULL)
+                                                    {
+                                                        char value[100];
+                                                        sprintf(value,"%d",atoi(var->value)*$3.value.integer_val);
+                                                        var->value=value;
+                                                        printf("Variable initialized\n");
+                                                    }
+                                                    else
+                                                    {
+                                                        printf("Variable not initialized\n");
+                                                    }
+                                                }
+                                                line++;
+                                            }
+    | VARIABLE DIVIDE_ASSIGN expression     {
+                                                struct Node *var = searchStack($1);
+                                                if(var==NULL)
+                                                {
+                                                    printf("Variable not declared\n");
+                                                }
+                                                else
+                                                {
+                                                    if (var->value!=NULL)
+                                                    {
+                                                        char value[100];
+                                                        sprintf(value,"%d",atoi(var->value)/$3.value.integer_val);
+                                                        var->value=value;
+                                                        printf("Variable initialized\n");
+                                                    }
+                                                    else
+                                                    {
+                                                        printf("Variable not initialized\n");
+                                                    }
+                                                }
+                                                line++;
+                                            }
     ;
 
 expression:
-    expression PLUS term            {printf("Addition\n");}
-    | expression MINUS term         {printf("Subtraction\n");}
-    | term                         {printf("Term\n");}
+    expression PLUS term            {                                        
+                                        $$.value_type=$1.value_type;
+                                        $$.value.integer_val=$1.value.integer_val-$3.value.integer_val;
+                                    }
+    | expression MINUS term         { 
+                                        $$.value_type=$1.value_type;
+                                        $$.value.integer_val=$1.value.integer_val-$3.value.integer_val;
+                                    }
+    | term                          {$$=$1;
+     printf("expr3ession:%d\n",$$.value.integer_val);}
     ;
 
 term:
-    term MULTIPLY factor           {printf("Multiplication\n");}
-    | term DIVIDE factor           {printf("Division\n");}
-    | factor                       {printf("Factor\n");}
+    term MULTIPLY factor            { 
+                                        $$.value_type=$1.value_type;
+                                        $$.value.integer_val=$1.value.integer_val*$3.value.integer_val;
+                                    }
+    | term DIVIDE factor            {
+                                        $$.value_type=$1.value_type;
+                                        $$.value.integer_val=$1.value.integer_val/$3.value.integer_val;
+                                    }
+    | factor                       {$$=$1;
+     printf("term:%d\n",$$.value.integer_val);}
     ;
 
 factor:
-    '(' expression ')'             {printf("Bracket Expression\n");}
-    | values                       {printf("Values\n");}
-    | crements                      {printf("Crements\n");}
-    |comparators                {printf("Comparators\n");}
+    '(' expression ')'             {$$=$2;} //can be changed
+    | values                       {$$=$1;
+                                    printf("Factor:%d\n",$$.value.integer_val);}
     ;
 
 comparators:
     values EQUAL values         {
-                                     char* value1;
-                                        char* value2;
-                                        if ($1.value_type==2)
-                                        {  
-                                            sprintf(value1,"%d",$1.value.integer_val);
-                                        }
-                                        if ($1.value_type==6)
-                                        {  
-                                            sprintf(value1,"%d",$1.value.bool_val);
-                                        }
-                                        if ($1.value_type==3)
-                                        {  
-                                            sprintf(value1,"%f",$1.value.float_val);
-                                        }
-                                        if ($3.value_type==2)
-                                        {  
-                                            sprintf(value2,"%d",$3.value.integer_val);
-                                        }
-                                        if ($3.value_type==6)
-                                        {  
-                                            sprintf(value2,"%d",$3.value.bool_val);
-                                        }
-                                        if ($3.value_type==3)
-                                        {  
-                                            sprintf(value2,"%f",$3.value.float_val);
-                                        }
-                                        int res = cmp(1,$1.value_type,value1,$1.var_type,$3.value_type,value2,$3.var_type);
-                                        if (res!=-1)
-                                        {
-                                            $$=res;
-                                        }
-                                        else
-                                        {
-                                            printf("Comparison not possible\n");
-                                        };
+                                    char* value1;
+                                    char* value2;
+                                    if ($1.value_type==2)
+                                    {  
+                                        sprintf(value1,"%d",$1.value.integer_val);
+                                    }
+                                    if ($1.value_type==6)
+                                    {  
+                                        sprintf(value1,"%d",$1.value.bool_val);
+                                    }
+                                    if ($1.value_type==3)
+                                    {  
+                                        sprintf(value1,"%f",$1.value.float_val);
+                                    }
+                                    if ($3.value_type==2)
+                                    {  
+                                        sprintf(value2,"%d",$3.value.integer_val);
+                                    }
+                                    if ($3.value_type==6)
+                                    {  
+                                        sprintf(value2,"%d",$3.value.bool_val);
+                                    }
+                                    if ($3.value_type==3)
+                                    {  
+                                        sprintf(value2,"%f",$3.value.float_val);
+                                    }
+                                    int res = cmp(1,$1.value_type,value1,$1.var_type,$3.value_type,value2,$3.var_type);
+                                    if (res!=-1)
+                                    {
+                                        $$=res;
+                                    }
+                                    else
+                                    {
+                                        printf("Comparison not possible\n");
+                                    };
                                 }
     | values NOT_EQUAL values   {  char* value1;
                                         char* value2;
@@ -345,8 +461,8 @@ comparators:
                                         {
                                             printf("Comparison not possible\n");
                                         }}
-    | values LESS values        {  char* value1;
-                                        char* value2;
+    | values LESS values        {  char value1[1024];
+                                        char value2[1024];
                                         if ($1.value_type==2)
                                         {  
                                             sprintf(value1,"%d",$1.value.integer_val);
@@ -494,6 +610,7 @@ values:
     | INTEGER_LITERAL   {
                             $$.value_type = 2;
                             $$.value.integer_val = $1;
+                            printf("int_literal:%d\n", $1);
                         }              
     | FLOAT_LITERAL     {
                             $$.value_type = 3;
@@ -558,8 +675,7 @@ elseClause:
     ;
     
 whileStatement:
-    WHILE '(' expression ')' statement      {printf("While Single Statement\n");}
-    | WHILE '(' expression ')' openScope  inBlockscope closeScope    {printf("While Multiple Statements\n");}
+    WHILE '(' comparators ')' openScope  inBlockscope closeScope    {printf("While Multiple Statements\n");}
     ;
 
 
@@ -568,12 +684,19 @@ forExpression:
     | VARIABLE MINUS_ASSIGN expression  {printf("For statement Variable Minus Equal\n");} 
     | VARIABLE MULTIPLY_ASSIGN expression   {printf("For statement Variable Multiply Equal\n");} 
     | VARIABLE DIVIDE_ASSIGN expression     {printf("For statement Variable Divide Equal\n");} 
-    | crements                          {printf("For statement Crements\n");} 
+
     ;
 
 forStatement:
-    FOR '(' INT VARIABLE ASSIGN INTEGER_LITERAL ';' comparators ';' forExpression ')' statement   {printf("For Single Statement\n");}
-    | FOR '(' INT VARIABLE ASSIGN INTEGER_LITERAL ';' comparators ';' forExpression ')' openScope  inBlockscope closeScope   {printf("For Multiple Statements\n");}
+FOR '(' INT VARIABLE ASSIGN INTEGER_LITERAL ';' comparators ';' forExpression ')' '{'  inBlockscope closeScope      {  
+                                                                                                                        Head_for_push();
+                                                                                                                        push(getHead());
+                                                                                                                        char value[1024];
+                                                                                                                        sprintf(value,"%d",$6);
+                                                                                                                        createNode($4,$3,"variable",value,line);
+                                                                                                                        free(value);
+                                                                                                                        line++;
+                                                                                                                    }
     ;
 
 switchStatement:
@@ -581,8 +704,6 @@ switchStatement:
     ;
 
 caseStatements:
-    CASE INTEGER_LITERAL ':' statement  BREAK ';' caseStatements  {printf("Case Statement single statement\n");}
-    | DEFAULT ':' statement  BREAK ';'    {printf("Default Statement single statement\n");}
     | CASE INTEGER_LITERAL ':' openScope inBlockscope BREAK ';' closeScope caseStatements   {printf("Case Statement multiple statements\n");}
     | DEFAULT ':' openScope inBlockscope BREAK ';' closeScope   {printf("Default Statement multiple statements\n");}
     ;
@@ -608,21 +729,3 @@ int yyerror(char *s) {
     printf("\nERROR: %s\n", s);
     return 0;
 }
-
-/* int boolchecker(struct terminal_values var){
-    if (strcmp(var.value.var_val,"N/A")!=0)
-    {
-        if (strcmp(var.var_type,"bool")==0)
-        {
-            return 1;
-        }
-        else if (strcmp(var.var_type,"int")==0)
-        {   
-            if (atoi(var.value.var_val)==0 || atoi(var.value.var_val)==1)
-            {
-                return 1;
-            }
-        }
-    }
-    return 0;
-} */

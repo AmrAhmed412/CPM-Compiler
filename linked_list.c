@@ -1,11 +1,12 @@
 #include "linked_list.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 struct Node *head = NULL;
 struct Node *prevHead = NULL;
 // Function to create a new node with the given data and insert it at the end of the linked list
-void createNode(char *name, char *datatype, char *type, char *value, int lineNo)
+void createNode(char *name, char *datatype, char *type, void *value, int lineNo)
 {
     struct Node *newNode = (struct Node *)malloc(sizeof(struct Node));
     if (newNode == NULL)
@@ -13,10 +14,12 @@ void createNode(char *name, char *datatype, char *type, char *value, int lineNo)
         fprintf(stderr, "Failed to allocate memory for new node\n");
         exit(EXIT_FAILURE);
     }
-    newNode->name = name;
-    newNode->datatype = datatype;
-    newNode->type = type;
-    newNode->value = value;
+    printf("Value: %s\n", value);
+    newNode->name = strdup(name);
+    newNode->datatype = strdup(datatype);
+    newNode->type = strdup(type);
+    newNode->value = strdup((char *)value);
+    printf("node value: %s\n", newNode->value);
     newNode->lineNo = lineNo;
     newNode->next = NULL; // Initialize the next pointer to NULL
     if (head == NULL)
@@ -29,6 +32,7 @@ void createNode(char *name, char *datatype, char *type, char *value, int lineNo)
         while (current->next != NULL)
         {
             current = current->next;
+            printf("current->name: %s\n", current->name);
         }
         current->next = newNode;
     }
@@ -80,7 +84,7 @@ void displayList()
         // printf("current->value: %s\n", current->value);
         // printf("current->lineNo: %d\n", current->lineNo);
 
-        printf("%s, %s, %s, %s, %d -> \n", current->name, current->datatype, current->type, current->value, current->lineNo);
+        printf("%s, %s, %s, %s, %d \n", current->name, current->datatype, current->type, current->value, current->lineNo);
         current = current->next;
     }
     printf("NULL\n");
@@ -126,12 +130,15 @@ struct Node *search(char *name)
     return NULL;
 }
 
-void updateHead()
+void Head_for_push()
 {
     prevHead = head;
     head = NULL;
 }
-
+void Head_for_pop()
+{
+    head = prevHead;
+}
 struct Node *getHead()
 {
     return head;

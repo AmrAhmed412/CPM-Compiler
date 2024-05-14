@@ -234,6 +234,7 @@ int cmp(int op, int type1, char *var_val1, char *var_type1, int type2, char *var
     }
     else if (type1 == 1)
     {
+        printf("EL7A2 VALUE TYPE 1 TELE3: %s\n", var_val1);
         return cmp_diff_types1(op, type2, var_val2, var_type1, var_val1);
     }
     else if (type2 == 1)
