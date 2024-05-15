@@ -20,7 +20,7 @@ int isFull()
 
 int isEmpty()
 {
-    return globalStack->top == NULL;
+    return globalStack->index == -1;
 }
 
 void push(struct Node *head)
@@ -86,8 +86,12 @@ void displayStack()
 
 struct Node *searchStack(char *name)
 {
+
     for (int i = globalStack->index; i >= 0; i--)
     {
+
+        displayListStack(globalStack->items[i]);
+        // printf("Searching in stack number:%d\n", i + 1);
         struct Node *current = globalStack->items[i];
         while (current != NULL)
         {
@@ -98,5 +102,5 @@ struct Node *searchStack(char *name)
             current = current->next;
         }
     }
-    return NULL; // Element not found in the stack
+    return NULL;
 }
