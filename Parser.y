@@ -11,6 +11,7 @@
     #include "utils.h"
 
     int line=1;
+    //Arr dynamic
 
 %}
 %union{
@@ -29,6 +30,12 @@
     int var_init;   //if variable is initialized or not
 
     }terminal_values; /* terminal values */
+
+    struct {
+    char* param_types; //datatype of variable
+    char* param_name[20]; //name of variable
+
+    }parameters;
 
 }
         //Data Types
@@ -53,6 +60,7 @@
 %type <terminal_values> term
 %type <terminal_values> expression
 %type <compare> comparators
+%type <parameters> parameters
         //Variable
 %token  <varval> VARIABLE
 
@@ -88,7 +96,7 @@ program:              {printf("Empty Program ;-;\n");}
 
 programStatements:         
       statement programStatements                               {printf("Program statements\n");}
-    | typeSpecifier VARIABLE '(' parameters ')' '{'  inBlockscope '}' programStatements {printf("Function Declaration\n");} 
+    | typeSpecifier VARIABLE '(' parameters ')' '{'  inBlockscope '}' programStatements {} 
     | typeSpecifier VARIABLE '('')' '{'   inBlockscope '}'  programStatements {printf("Function Declaration with no parameters\n");}
     | typeSpecifier VARIABLE '(' parameters ')' '{'   inBlockscope '}'  {printf("Function Declaration\n");} 
     | typeSpecifier VARIABLE '('')' '{' inBlockscope '}'   {printf("Function Declaration with no parameters\n");}      
@@ -145,7 +153,7 @@ callParameters:
 
 parameters:                 
     typeSpecifier VARIABLE      {printf("Parameters\n");} 
-    | parameters ',' typeSpecifier VARIABLE     {printf("Multiple Parameters\n");}
+    | typeSpecifier VARIABLE ','parameters       {printf("Multiple Parameters\n");}
     ;
 
 declaration:
@@ -304,10 +312,8 @@ comparators:
                                         }
                                     }
     | values LESS values            { //print all parameters of cmp
-                                        displayList();
-                                        printf("comparators\n");
-                                        printf("First Value: %d,%s,%d\n", $1.value_type,$1.var_type,$1.var_init);
-                                        printf("par1: %d,par2:%s,par3:%d,par4:%d,par5:%s,par6:%d\n", $1.value_type,$1.var_type,$1.var_init,$3.value_type,$3.var_type,$3.var_init);
+                               
+                                       
                                         int res = cmp($1.value_type,$1.var_type,$1.var_init,$3.value_type,$3.var_type,$3.var_init);
                                         if (res==0)
                                         {
@@ -377,11 +383,8 @@ values:
 
 variableValue:
     VARIABLE            {
-                            printf("Variable:%s\n",$1);
                             $$.value_type = 1;
-                            
                             struct Node *node  = searchScope($1);
-                            printf("Address of node pointer: %p\n", (void *)node);
                             if(node == NULL){
                                 printf("Variable not declared\n");
                             }
@@ -438,14 +441,10 @@ FOR ForBracket forScope    {
                             }
     ;
 bora3y:
-INT VARIABLE ASSIGN INTEGER_LITERAL { scopePush();createNode($2,"int","variable",1,line);displayList(); printf("Bora3y\n");};
+INT VARIABLE ASSIGN INTEGER_LITERAL { scopePush();createNode($2,"int","variable",1,line);};
 
 ForBracket:
 '(' bora3y ';' comparators ';' forExpression ')' 
-                                                                                    {
-                                                                                       displayList(); 
-                                                                                    }
-
     ;
 
 
@@ -464,7 +463,7 @@ caseStatements:
     ;
 
 returnStatement:
-    RETURN expression ';'   {printf("Return Statement with expression\n");}
+    RETURN expression ';'   {printf("Return Statement with expression\n");} 
     | RETURN ';'    {printf("Return Statement without expression\n");}
     ;
 

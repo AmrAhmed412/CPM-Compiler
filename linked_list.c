@@ -38,7 +38,6 @@ void createNode(char *name, char *datatype, char *type, int init, int lineNo)
     // printf("node initialized: %s\n", newNode->init);
     newNode->lineNo = lineNo;
     newNode->next = NULL; // Initialize the next pointer to NULL
-    printf("head->name: %s\n", head->name);
     if (strcmp(head->name, "null") == 0)
     {
         head = newNode;
@@ -50,7 +49,6 @@ void createNode(char *name, char *datatype, char *type, int init, int lineNo)
         while (current->next != NULL)
         {
             current = current->next;
-            printf("current->name: %s\n", current->name);
         }
         current->next = newNode;
     }
@@ -171,21 +169,18 @@ void Head_for_push()
     newhead->type = strdup("null");
     newhead->init = -1;
     newhead->lineNo = -1;
-    newhead->next = head;
+    newhead->next = NULL;
     head = newhead;
 }
 
 void Head_for_pop()
 {
-    if (prevHead == NULL)
-    {
-        fprintf(stderr, "Previous head is not set\n");
-        exit(EXIT_FAILURE);
-    }
-    struct Node *temp = head;
-    head = prevHead;
-    free(temp);      // Free the memory of the previous head
-    prevHead = NULL; // Reset prevHead
+    // if (prevHead == NULL)
+    // {
+    //     fprintf(stderr, "Previous head is not set\n");
+    //     exit(EXIT_FAILURE);
+    // }
+    head = scopes[scopeIndex];
 }
 
 struct Node *getHead()
@@ -208,15 +203,11 @@ void scopePop()
 
 struct Node *searchScope(char *name)
 {
-    printf("scope index %d\n", scopeIndex);
     for (int i = scopeIndex; i >= 0; i--)
     {
-        displayList();
         struct Node *current = scopes[i];
-        printf("current->name = %s , name = %s , their comparison = %d", current->name, name, strcmp(current->name, name));
         while (current != NULL)
         {
-            // printf("current->name = %s , name = %s , their comparison = %d", current->name, name, strcmp(current->name, name));
             if (strcmp(current->name, name) == 0)
             {
                 return current;
