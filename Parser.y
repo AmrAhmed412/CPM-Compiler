@@ -571,8 +571,15 @@ expression:
                                        int res = express(0,$1.value_type,$1.var_type,$1.var_init,$3.value_type,$3.var_type,$3.var_init);
                                        if (res == 1)
                                         {
+
                                             $$=$1;
                                         }
+                                        else
+                                        {
+                                            $$.value_type = 1;
+                                            $$.var_type = "Mismatch";
+                                        }
+                                        // printf("res = zeeroo");
                        
                                     }
     | expression MINUS term         {
@@ -581,6 +588,11 @@ expression:
                                        if (res == 1)
                                         {
                                             $$=$1;
+                                        }
+                                         else
+                                        {
+                                            $$.value_type = 1;
+                                            $$.var_type = "Mismatch";
                                         }
                                     }
     | term                          {$$=$1;}
@@ -594,12 +606,22 @@ term:
                                         {
                                             $$=$1;
                                         }
+                                         else
+                                        {
+                                            $$.value_type = 1;
+                                            $$.var_type = "Mismatch";
+                                        }
                                     }
     | term DIVIDE factor            {
                                         int res =  express(3,$1.value_type,$1.var_type,$1.var_init,$3.value_type,$3.var_type,$3.var_init);
                                         if (res == 1)
                                         {
                                             $$=$1;
+                                        }
+                                         else
+                                        {
+                                            $$.value_type = 1;
+                                            $$.var_type = "Mismatch";
                                         }
                                     }
     | factor                       {$$=$1;}
