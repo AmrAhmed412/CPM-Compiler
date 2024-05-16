@@ -3,6 +3,15 @@
 #include "stack.h"
 #include <string.h>
 
+// Define the maximum size of the stack
+#define MAX_SIZE 100
+
+// Define the structure of a stack
+typedef struct {
+    int items[MAX_SIZE];
+    int top;
+} Stack;
+
 // Function to initialize the stack
 void initialize(Stack *stack) {
     stack->top = -1; // Initialize top to -1 (empty stack)
@@ -46,7 +55,7 @@ int peek(Stack *stack) {
 }
 
 // Function to display the elements of the stack
-void display(Stack *stack) {
+void displayQuad(Stack *stack) {
     if (isEmpty(stack)) {
         printf("Stack is empty!\n");
         return;
@@ -57,3 +66,4 @@ void display(Stack *stack) {
     }
     printf("\n");
 }
+

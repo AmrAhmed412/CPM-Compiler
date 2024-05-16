@@ -5,11 +5,11 @@
 	#include <stdlib.h>
 	#include <stdarg.h>
 	#include <string.h>	
-    // #include <stdbool.h>
-    // #include "stack.h"
     #include "linked_list.h"
     #include "utils.h"
     #include "parameters.h"
+    #include "quadGen.h"
+    // #include "stack.h"
 
 
     
@@ -31,6 +31,8 @@
     int value_type; //1-6 for variable, int, float, string, char, bool
     char* var_type; //datatype of variable
     int var_init;   //if variable is initialized or not
+    char* var_name; //name of variable
+    int isUsed_in_Calc;
     }terminal_values; /* terminal values */
 
     struct {
@@ -59,8 +61,8 @@
 %type <type> typeSpecifier
 %type <terminal_values> values
 %type <terminal_values> variableValue
-%type <terminal_values> factor
-%type <terminal_values> term
+/* %type <terminal_values> factor */
+/* %type <terminal_values> term */
 %type <terminal_values> expression
 %type <compare> comparators
 %type <callParameters> callParameters
@@ -218,8 +220,7 @@ functionCall:
                                                             }
                                                         }
                                                     }
-    | VARIABLE ASSIGN VARIABLE '(' callParameters ')' ';' 
-                                                            {   
+    | VARIABLE ASSIGN VARIABLE '(' callParameters ')' ';'   {   
                                                                 struct Node* temp = searchScope($1);
                                                                 if (temp ==NULL)
                                                                 {
@@ -497,6 +498,14 @@ typeSpecifier:
 
 assignment:
     VARIABLE ASSIGN expression              {
+                                                // x = 1+2+3      ========> case 1
+                                                // quad(+,1,2,T1)
+                                                // quad(+,T1,3,T2)
+                                                // quad(:=,T2,,x)
+
+                                                // x = 2;         ========> case 2
+                                                // quad(:=,2,,x)
+
                                                 struct Node *var = searchScope($1);
                                                 if(var==NULL)
                                                 {
@@ -508,12 +517,14 @@ assignment:
                                                     {
                                                         if (strcmp(var->datatype,value_int_to_string_util($3.value_type))==0)
                                                         {
-                                                           var->init=1;  
+                                                            var->init=1; 
+                                                            // flush_temp();
+                                                            buildTable_assign($1, $3.var_name);
+                                                            print_quads();
                                                         }
                                                         else
                                                         {
                                                             printf("Type Mismatch\n");
-                                                        
                                                         }
                                                     }
                                                     else
@@ -521,18 +532,27 @@ assignment:
                                                         if (strcmp(var->datatype,$3.var_type)==0)
                                                         {
                                                             var->init=1;  
+                                                            buildTable_assign($1, $3.var_name);
+                                                            print_quads();
                                                         }
-                                                            else
+                                                        else
                                                         {
                                                             printf("Type Mismatch\n");
                                                         }
-                                                    }
-                            
-                                                    // var->init=1;  
+                                                    } 
                                                 }
                                                 line++;
                                             }
     | VARIABLE PLUS_ASSIGN expression       {
+                                                // x += 1+2+3      ========> case 1
+                                                // quad(+,1,2,T1)
+                                                // quad(+,T1,3,T2)
+                                                // quad(+,T2,x,T4)
+                                                //// quad(:=,T4,,x)
+
+                                                // x += 2;         ========> case 2
+                                                // quad(+,2,x,T1)
+                                                // quad(:=,T1,,x)
                                                 struct Node *var = searchScope($1);
                                                 if(var==NULL)
                                                 {
@@ -546,16 +566,18 @@ assignment:
                                                     }
                                                     else
                                                     {
+                                                        // x+=1+2+3
+                                                        buildTable_exp("ADD", $3.var_name, $1,1);
+                                                        // print_quads();
                                                         if ($3.value_type!=1)
                                                         {
                                                             if (strcmp(var->datatype,value_int_to_string_util($3.value_type))==0)
                                                             {
-                                                            var->init=1;  
+                                                                var->init=1;  
                                                             }
                                                             else
                                                             {
                                                                 printf("Type Mismatch\n");
-                                                            
                                                             }
                                                         }
                                                         else
@@ -564,7 +586,7 @@ assignment:
                                                             {
                                                                 var->init=1;  
                                                             }
-                                                                else
+                                                            else
                                                             {
                                                                 printf("Type Mismatch\n");
                                                             }
@@ -701,12 +723,20 @@ assignment:
     ;
 
 expression:
-    expression PLUS term            {
+    expression PLUS expression            {
+                                        // 1+2+3
+                                        // quad(+,1,2,T1)
+                                        // quad(+,T1,3,T2)
+                                        // quad(:=,T2,,x)
                                         
-                                       int res = express(0,$1.value_type,$1.var_type,$1.var_init,$3.value_type,$3.var_type,$3.var_init);
-                                       if (res == 1)
+                                        int res = express(0,$1.value_type,$1.var_type,$1.var_init,$3.value_type,$3.var_type,$3.var_init);
+                                        if (res == 1)
                                         {
-
+                                            // int isUsed[2];
+                                            // int* temp =  buildTable_exp("ADD", $1.var_name, $1.isUsed_in_Calc,  $3.var_name, $3.isUsed_in_Calc, 0);
+                                            // $1.isUsed_in_Calc = temp[0];
+                                            // $3.isUsed_in_Calc = temp[1];
+                                            buildTable_exp("ADD", $1.var_name, $3.var_name, 0);
                                             $$=$1;
                                         }
                                         else
@@ -717,11 +747,16 @@ expression:
                                         // printf("res = zeeroo");
                        
                                     }
-    | expression MINUS term         {
+    | expression MINUS expression   {
                                         
                                        int res = express(1,$1.value_type,$1.var_type,$1.var_init,$3.value_type,$3.var_type,$3.var_init);
                                        if (res == 1)
                                         {
+                                            buildTable_exp("SUB", $1.var_name, $3.var_name,0);
+                                            //  int* temp =  buildTable_exp("SUB", $1.var_name, $1.isUsed_in_Calc,  $3.var_name, $3.isUsed_in_Calc, 0);
+                                            // $1.isUsed_in_Calc = temp[0];
+                                            // $3.isUsed_in_Calc = temp[1];
+                                            // print_quads();
                                             $$=$1;
                                         }
                                          else
@@ -730,15 +765,15 @@ expression:
                                             $$.var_type = "Mismatch";
                                         }
                                     }
-    | term                          {$$=$1;}
-                                    
-    ;
-
-term:
-    term MULTIPLY factor            {
+    | expression MULTIPLY expression            {
                                         int res =express(2,$1.value_type,$1.var_type,$1.var_init,$3.value_type,$3.var_type,$3.var_init);
                                         if (res == 1)
                                         {
+                                            buildTable_exp("MUL", $1.var_name, $3.var_name,0);
+                                            // int* temp =  buildTable_exp("MUL", $1.var_name, $1.isUsed_in_Calc,  $3.var_name, $3.isUsed_in_Calc, 0);
+                                            // $1.isUsed_in_Calc = temp[0];
+                                            // $3.isUsed_in_Calc = temp[1];
+                                            // print_quads();
                                             $$=$1;
                                         }
                                          else
@@ -747,10 +782,15 @@ term:
                                             $$.var_type = "Mismatch";
                                         }
                                     }
-    | term DIVIDE factor            {
+    | expression DIVIDE expression  {
                                         int res =  express(3,$1.value_type,$1.var_type,$1.var_init,$3.value_type,$3.var_type,$3.var_init);
                                         if (res == 1)
                                         {
+                                            buildTable_exp("DIV", $1.var_name, $3.var_name,0);
+                                            // int* temp =  buildTable_exp("DIV", $1.var_name, $1.isUsed_in_Calc,  $3.var_name, $3.isUsed_in_Calc, 0);
+                                            // $1.isUsed_in_Calc = temp[0];
+                                            // $3.isUsed_in_Calc = temp[1];
+                                            // print_quads();
                                             $$=$1;
                                         }
                                          else
@@ -759,11 +799,7 @@ term:
                                             $$.var_type = "Mismatch";
                                         }
                                     }
-    | factor                       {$$=$1;}
-    ;
-
-factor:
-    '(' expression ')'             {$$=$2;} //can be changed
+    |'(' expression ')'            {$$=$2;} //can be changed
     | values                       {$$=$1;}
     ;
 
@@ -840,22 +876,36 @@ values:
                         }        
     | INTEGER_LITERAL   {
                             $$.value_type = 2;
-                           
+                            char* str = malloc(20); // Allocate memory for the string
+                            sprintf(str, "%d", $1); // Convert the integer to a string
+                            $$.var_name = str; 
+                            $$.isUsed_in_Calc = 0;
                         }              
     | FLOAT_LITERAL     {
                             $$.value_type = 3;
+                            char* str = malloc(20); // Allocate memory for the string
+                            sprintf(str, "%f", $1); // Convert the integer to a string
+                            $$.var_name = str;
+                            $$.isUsed_in_Calc = 0;
                         } 
     | STRING_LITERAL    {
                             $$.value_type = 4;
+                            $$.var_name = $1;
                         } 
     | CHAR_LITERAL      {
                             $$.value_type = 5;
+                            char str[2];
+                            str[0] = $1;
+                            str[1] = '\0';
+                            $$.var_name = str;
                         }
     | BOOLEAN_TRUE      {
                             $$.value_type = 6;
+                            $$.var_name = "true";
                         }
     | BOOLEAN_FALSE     {
                             $$.value_type = 6;
+                            $$.var_name = "false";
                         }
     ;
 
@@ -870,8 +920,10 @@ variableValue:
                             {
                                 if (node->init!=0)
                                 {
+                                    $$.var_name = $1;
                                     $$.var_type=node->datatype; 
                                     $$.var_init=node->init;
+                                    $$.isUsed_in_Calc = 0;
                                 }else
                                 {
                                     printf("Variable not initialized\n");

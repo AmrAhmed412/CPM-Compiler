@@ -1,2 +1,4 @@
 *.yy.c
 *.gch
+*.exe
+/.vscode

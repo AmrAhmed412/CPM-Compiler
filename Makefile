@@ -1,15 +1,30 @@
-all: a.exe
+# Bison and Flex
+BISON = bison --yacc
+FLEX = flex
 
-a.exe: y.tab.c lex.yy.c linked_list.c linked_list.h utils.c utils.h parameters.c parameters.h 
-    gcc y.tab.c lex.yy.c linked_list.c linked_list.h utils.c utils.h parameters.c parameters.h -o a.exe
+# Target
+TARGET = a.exe
 
-y.tab.c: Parser.y
-    bison --yacc Parser.y -d
+SRCS = y.tab.c lex.yy.c linked_list.c utils.c parameters.c
+HEADERS = linked_list.h utils.h parameters.h
+
+CC = gcc
+
+# Default target
+all: $(TARGET)
+
+# Compile Bison and Flex files
+y.tab.c y.tab.h: Parser.y
+    $(BISON) $< -d
 
 lex.yy.c: Lexer.l
-    flex Lexer.l
+    $(FLEX) $<
 
+# Compile source files
+$(TARGET): $(SRCS) $(HEADERS)
+    $(CC) $(CFLAGS) $^ -o $@
+
+# Clean rule
+.PHONY: clean
 clean:
-    rm -f a.exe y.tab.c lex.yy.c y.tab.h
-
-.PHONY: all clean
+    rm -f $(TARGET) y.tab.c y.tab.h lex.yy.c

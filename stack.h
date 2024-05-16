@@ -1,9 +1,6 @@
 #ifndef STACK_H
 #define STACK_H
 
-#include <stdio.h>
-#include <stdlib.h> // For malloc and free
-
 // Define the maximum size of the stack
 #define MAX_SIZE 100
 
@@ -13,15 +10,25 @@ typedef struct {
     int top;
 } Stack;
 
-
-// Function declarations
+// Function to initialize the stack
 void initialize(Stack *stack);
-int isEmpty(Stack *stack);
+
+// Function to check if the stack is empty
+int isEmpty(Stack *stack) ;
+// Function to check if the stack is full
 int isFull(Stack *stack);
+
+// Function to push an element onto the stack
 void push(Stack *stack, int value);
+
+// Function to pop an element from the stack
 int pop(Stack *stack);
+
+// Function to peek the top element of the stack without removing it
 int peek(Stack *stack);
-void display(Stack *stack);
+
+// Function to display the elements of the stack
+void displayQuad(Stack *stack);
 
 
-#endif // STACK_H
+#endif
