@@ -96,7 +96,6 @@ void displayList()
         printf("%s, %s, %s, %d, %d \n", current->name, current->datatype, current->type, current->init, current->lineNo);
         current = current->next;
     }
-    printf("NULL\n");
 }
 
 void displayListStack(struct Node *node)
@@ -108,7 +107,6 @@ void displayListStack(struct Node *node)
         printf("%s, %s, %s, %d, %d", current->name, current->datatype, current->type, current->init, current->lineNo);
         current = current->next;
     }
-    printf("NULL\n");
 }
 
 // Function to free memory allocated for the linked list
@@ -137,24 +135,6 @@ struct Node *search(char *name)
     return NULL;
 }
 
-// void Head_for_push()
-// {
-//     prevHead = head;
-
-//     struct Node *newhead = (struct Node *)malloc(sizeof(struct Node));
-//     newhead->name = "null";
-//     newhead->datatype = "null";
-//     newhead->type = "null";
-//     newhead->init = -1;
-//     newhead->lineNo = -1;
-//     newhead->next = NULL;
-
-//     head = newhead;
-// }
-// void Head_for_pop()
-// {
-//     head = prevHead;
-// }
 void Head_for_push()
 {
     prevHead = head;
@@ -175,11 +155,6 @@ void Head_for_push()
 
 void Head_for_pop()
 {
-    // if (prevHead == NULL)
-    // {
-    //     fprintf(stderr, "Previous head is not set\n");
-    //     exit(EXIT_FAILURE);
-    // }
     head = scopes[scopeIndex];
 }
 
@@ -218,24 +193,6 @@ struct Node *searchScope(char *name)
     return NULL;
 }
 
-// struct Node *searchScope(char *name)
-// {
-//     int iter = scopeIndex;
-
-//     while (iter > -1)
-//     {
-//         struct Node *current = scopes[iter];
-//         while (current != NULL)
-//         {
-//             if (strcmp(current->name, name) == 0)
-//             {
-//                 return current;
-//             }
-//             current = current->next;
-//         }
-//         iter--;
-//     }
-// }
 
 void displayScope()
 {

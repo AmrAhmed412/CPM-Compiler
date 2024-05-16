@@ -9,9 +9,12 @@
     // #include "stack.h"
     #include "linked_list.h"
     #include "utils.h"
+    #include "parameters.h"
 
+
+    
     int line=1;
-    //Arr dynamic
+    
 
 %}
 %union{
@@ -24,18 +27,18 @@
     int boolval;              /* boolean value      */
     int compare;             /* comparison value    */
 
-    struct  {
+    struct {
     int value_type; //1-6 for variable, int, float, string, char, bool
     char* var_type; //datatype of variable
     int var_init;   //if variable is initialized or not
-
     }terminal_values; /* terminal values */
 
     struct {
-    char* param_types; //datatype of variable
-    char* param_name[20]; //name of variable
+   
 
-    }parameters;
+    }callParameters;
+
+    
 
 }
         //Data Types
@@ -60,7 +63,8 @@
 %type <terminal_values> term
 %type <terminal_values> expression
 %type <compare> comparators
-%type <parameters> parameters
+%type <callParameters> callParameters
+
         //Variable
 %token  <varval> VARIABLE
 
@@ -96,12 +100,63 @@ program:              {printf("Empty Program ;-;\n");}
 
 programStatements:         
       statement programStatements                               {printf("Program statements\n");}
-    | typeSpecifier VARIABLE '(' parameters ')' '{'  inBlockscope '}' programStatements {} 
-    | typeSpecifier VARIABLE '('')' '{'   inBlockscope '}'  programStatements {printf("Function Declaration with no parameters\n");}
-    | typeSpecifier VARIABLE '(' parameters ')' '{'   inBlockscope '}'  {printf("Function Declaration\n");} 
-    | typeSpecifier VARIABLE '('')' '{' inBlockscope '}'   {printf("Function Declaration with no parameters\n");}      
+    | function functionScope programStatements { display();} 
+    | function  functionScope {printf("Function Declaration with no parameters\n");}      
     | statement
     ;
+
+function:
+typeSpecifier VARIABLE '(' parameters ')'                   {
+                                                                struct Node *node = searchScope($2);
+                                                                if(node!=NULL)
+                                                                {
+                                                                    printf("Function already declared\n");
+                                                                }
+                                                                else
+                                                                {
+                                                                    char *temp = malloc(sizeof(char) * 1024);
+                                                                    temp[0]='\0';
+                                                                    strcat(temp,convert_to_string());
+                                                                    strcat(temp,"=>");
+                                                                    strcat(temp,$1);
+                                                                    createNode($2,temp,"function",-1,line);
+                                                                    line++;
+                                                                    scopePush();
+                                                                    char** names = get_names();
+                                                                    char** datatypes = get_datatypes();
+                                                                    int count = get_count();
+                                                                    for (int i=0;i<count;i++)
+                                                                    {
+                                                                        createNode(names[i],datatypes[i],"variable",1,line);
+                                                                    }
+                                                                    line++;
+                                                                    free(temp);
+                                                                    clear();
+                                                                }
+                                                            }
+| typeSpecifier VARIABLE '('')'                 {
+                                                    struct Node *node = searchScope($2);
+                                                    if(node!=NULL)
+                                                    {
+                                                        printf("Function already declared\n");
+                                                    }
+                                                    else
+                                                    {
+                                                        char *temp = malloc(sizeof(char) * 1024);
+                                                        temp[0]='\0';
+                                                        strcat(temp,"=>");
+                                                        strcat(temp,$1);
+                                                        createNode($2,temp,"function",-1,line);
+                                                        line++;
+                                                        scopePush();
+                                                        free(temp);
+                                                    }
+                                                }
+;
+
+functionScope:
+    '{' inBlockscope closeScope
+;
 
 openScope:
     '{' {scopePush();}
@@ -131,29 +186,107 @@ statement:
     | returnStatement       {printf("Return Statement\n");}
     | repeatUntilStatement  {printf("Repeat Until Statement from statement\n");}
     | functionCall       {printf("Function Call\n");}
-    |comparators ';'       {printf("Comparators\n");}
-    /* | comparators ';'       {printf("Comparators\n");} */
-    /* | enumStatement         {printf("Enum Statement\n");} */
-    | VARIABLE ASSIGN functionCall       {printf("Function Call with Assignment\n");}
-    | typeSpecifier VARIABLE ASSIGN functionCall     {printf("Function Call with Assignment\n");}  
     | BREAK ';'        {printf("Break\n");}
     | CONTINUE ';'      {printf("Continue\n");}
     | error ';'     { yyerrok; }
     ;  
 
-functionCall:               
-    VARIABLE '(' ')' ';'               {printf("Function Call\n");}
+functionCall:
+
+    VARIABLE ASSIGN VARIABLE '('')' ';'            {
+                                                        struct Node* temp = searchScope($1);
+                                                        if (temp ==NULL)
+                                                        {
+                                                            printf("Variable not declared\n");
+                                                        }
+                                                        else
+                                                        {
+                                                            struct Node* temp2 = searchScope($3);
+                                                            if (temp2 ==NULL)
+                                                            {
+                                                                printf("Function not declared\n");
+                                                            }
+                                                            else
+                                                            {
+                                                                func_type_check(temp->datatype,temp2->datatype);
+                                                                char *equal = strchr(temp2->datatype, '=');
+                                                                int index = (int)(equal - temp2->datatype);
+                                                                if (index!=0)
+                                                                {
+                                                                    printf("Function's parameters are not passed to the function\n");
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+    | VARIABLE ASSIGN VARIABLE '(' callParameters ')' ';' 
+                                                            {
+                                                                printf("LMAOOOOOOOOOOOOOOOOOOOO\n");    
+                                                                struct Node* temp = searchScope($1);
+                                                                if (temp ==NULL)
+                                                                {
+                                                                    printf("Variable not declared\n");
+                                                                }
+                                                                else
+                                                                {
+                                                                    struct Node* temp2 = searchScope($3);
+                                                                    if (temp2 ==NULL)
+                                                                    {
+                                                                        printf("Function not declared\n");
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        func_type_check(temp->datatype,temp2->datatype);
+                                                                        int idx = get_index();
+                                                                        int* param_value_type = get_param_value_type();
+                                                                        char **param_var_type = get_param_var_type();
+                                                                        int *param_var_init = get_param_var_init();
+                                                                           for (int i=0;i<idx;i++)
+                                                                            {
+                                                                                if (param_value_type[i]==1)
+                                                                                {
+                                                                                    if (param_var_init[i]==0)
+                                                                                    {
+                                                                                        printf("Variable not initialized\n");
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        printf("Variable: %s\n",param_var_type[i]);
+                                                                                        func_input_check(temp2->datatype,param_var_type[i],i);
+                                                                                    }
+                                                                                }
+                                                                                else
+                                                                                {   
+                                                                                    char *val_type = value_int_to_string(param_value_type[i]);
+                                                                                    printf("Variable: %s\n",val_type);
+                                                                                    func_input_check(temp2->datatype,val_type,i);
+                                                                                }
+                                                                            }
+                                                                            clear_call_params();
+                                                                    }
+                                                                }
+
+                                                            }
+    | VARIABLE '(' ')' ';'  {printf("Function Call\n");}
     | VARIABLE '(' callParameters ')' ';'  {printf("Function Call with Parameters\n");}
+    | typeSpecifier VARIABLE ASSIGN VARIABLE '(' ')' ';'  {printf("Function Call with Assignment\n");}
+    | typeSpecifier VARIABLE ASSIGN VARIABLE '(' callParameters ')' ';'  {printf("Function Call with Assignment and Parameters\n");}
     ;
 
 callParameters:             
-    values    {printf("Parameter\n");}
-    | callParameters ',' values   {printf("Multiple  Parameters\n");}
+    values      {
+                    addCallParams($1.value_type,$1.var_type,$1.var_init);
+                }  
+    | callParameters','values      
+                                { 
+                                    printf("el index rabena yente2em menno: %d",get_index());
+                                    addCallParams($3.value_type,$3.var_type,$3.var_init);
+                                    printf("el index rabena yente2em menno: %d",get_index());
+                                } 
     ;
 
 parameters:                 
-    typeSpecifier VARIABLE      {printf("Parameters\n");} 
-    | typeSpecifier VARIABLE ','parameters       {printf("Multiple Parameters\n");}
+    typeSpecifier VARIABLE      {addParameter($1,$2);} 
+    | parameters ',' typeSpecifier VARIABLE        {addParameter($3,$4);}
     ;
 
 declaration:
@@ -175,7 +308,29 @@ declaration:
                                                                         if(var!=NULL){
                                                                             printf("Variable already declared\n");
                                                                         }else{
-                                                                            createNode($2,$1,"variable",1,line);
+                                                                            if ($4.value_type!=1)
+                                                                            {
+                                                                                if (strcmp($1,value_int_to_string_util($4.value_type))==0)
+                                                                                {
+                                                                                    createNode($2,$1,"variable",1,line);
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    printf("Type Mismatch\n");
+                                                                                
+                                                                                }
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                if (strcmp($1,var->var_type)==0)
+                                                                                {
+                                                                                    createNode($2,$1,"variable",1,line);
+                                                                                }
+                                                                                  else
+                                                                                {
+                                                                                    printf("Type Mismatch\n");
+                                                                                }
+                                                                            }
                                                                         }
                                                                         line++;
                                                                     }
@@ -200,6 +355,11 @@ assignment:
                                                 }
                                                 else
                                                 {
+                                                       if (strcmp($3,var->datatype)!=0)
+                                                        {
+                                                            printf("Type Mismatch\n");
+                                                        }
+                                                    
                                                     var->init=1;  
                                                 }
                                                 line++;
@@ -216,6 +376,15 @@ assignment:
                                                     {
                                                         printf("Variable not initialized\n");
                                                     }
+                                                    else
+                                                    {
+                                                        
+                                                        if (strcmp($1,var->datatype)!=0)
+                                                        {
+                                                            printf("Type Mismatch\n");
+                                                        }
+
+                                                    }
                                                 }
                                                 line++;
                                             }
@@ -230,6 +399,15 @@ assignment:
                                                     if (var->init==0)
                                                     {
                                                         printf("Variable not initialized\n");
+                                                    }
+                                                    else
+                                                    {
+                                                        
+                                                        if (strcmp($1,var->datatype)!=0)
+                                                        {
+                                                            printf("Type Mismatch\n");
+                                                        }
+
                                                     }
                                                 }
                                                 line++;
@@ -247,6 +425,15 @@ assignment:
                                                     {
                                                         printf("Variable not initialized\n");
                                                     }
+                                                     else
+                                                    {
+                                                        
+                                                        if (strcmp($1,var->datatype)!=0)
+                                                        {
+                                                            printf("Type Mismatch\n");
+                                                        }
+
+                                                    }
                                                 }
                                                 line++;
                                             }
@@ -262,25 +449,57 @@ assignment:
                                                     {
                                                         printf("Variable not initialized\n");
                                                     }
+                                                    else
+                                                    {
+                                                        
+                                                        if (strcmp($1,var->datatype)!=0)
+                                                        {
+                                                            printf("Type Mismatch\n");
+                                                        }
+
+                                                    }
                                                 }
                                                 line++;
                                             }
     ;
 
-
-
 expression:
-    expression PLUS term            {;}
-    | expression MINUS term         {;}
-    | term                          {$$=$1;
-                                    
+    expression PLUS term            {
+                                        
+                                       int res = express(0,$1.value_type,$1.var_type,$1.var_init,$3.value_type,$3.var_type,$3.var_init);
+                                       if (res == 1)
+                                        {
+                                            $$=$1;
+                                        }
+                       
                                     }
+    | expression MINUS term         {
+                                        
+                                       int res = express(1,$1.value_type,$1.var_type,$1.var_init,$3.value_type,$3.var_type,$3.var_init);
+                                       if (res == 1)
+                                        {
+                                            $$=$1;
+                                        }
+                                    }
+    | term                          {$$=$1;}
                                     
     ;
 
 term:
-    term MULTIPLY factor            {;}
-    | term DIVIDE factor            {;}
+    term MULTIPLY factor            {
+                                        int res =express(2,$1.value_type,$1.var_type,$1.var_init,$3.value_type,$3.var_type,$3.var_init);
+                                        if (res == 1)
+                                        {
+                                            $$=$1;
+                                        }
+                                    }
+    | term DIVIDE factor            {
+                                        int res =  express(3,$1.value_type,$1.var_type,$1.var_init,$3.value_type,$3.var_type,$3.var_init);
+                                        if (res == 1)
+                                        {
+                                            $$=$1;
+                                        }
+                                    }
     | factor                       {$$=$1;}
     ;
 
