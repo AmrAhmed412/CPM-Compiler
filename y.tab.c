@@ -595,13 +595,13 @@ static const yytype_uint16 yyrline[] =
        0,   101,   101,   102,   105,   106,   107,   108,   112,   140,
      161,   165,   168,   178,   179,   183,   184,   185,   186,   187,
      188,   189,   190,   191,   192,   193,   194,   199,   224,   270,
-     287,   328,   362,   415,   418,   425,   426,   430,   448,   491,
-     492,   493,   494,   495,   496,   497,   501,   547,   600,   646,
-     692,   741,   774,   795,   815,   835,   836,   840,   847,   854,
-     861,   870,   877,   884,   891,   898,   907,   910,   918,   926,
-     930,   937,   941,   948,   971,   972,   976,   977,   980,   981,
-     985,   989,   994,   995,   996,   997,  1002,  1010,  1013,  1019,
-    1023,  1026,  1027,  1028,  1032,  1033,  1037
+     287,   328,   362,   415,   418,   425,   426,   430,   452,   498,
+     499,   500,   501,   502,   503,   504,   508,   553,   606,   652,
+     697,   746,   779,   800,   820,   840,   841,   845,   852,   859,
+     866,   875,   882,   889,   896,   903,   912,   915,   923,   931,
+     935,   942,   946,   953,   975,   976,   980,   981,   984,   985,
+     989,   993,   998,   999,  1000,  1001,  1006,  1009,  1012,  1018,
+    1022,  1025,  1026,  1027,  1031,  1032,  1036
 };
 #endif
 
@@ -2182,6 +2182,10 @@ yyreduce:
                                                                                 printf("Variable already declared\n");
                                                                             }else{
                                                                                 createNode((yyvsp[(2) - (2)].varval),(yyvsp[(1) - (2)].type),"variable",0,line);
+
+                                                                                buildTable_exp("ASSIGN","",(yyvsp[(2) - (2)].varval),0);
+                                                                                print_quads();
+
                                                                             }
                                                                             line++;
                                                                         }
@@ -2195,7 +2199,7 @@ yyreduce:
   case 38:
 
 /* Line 1455 of yacc.c  */
-#line 448 "Parser.y"
+#line 452 "Parser.y"
     {
                                                                         if (strcmp((yyvsp[(1) - (4)].type),"void")!=0)
                                                                         {
@@ -2209,6 +2213,8 @@ yyreduce:
                                                                                     if (strcmp((yyvsp[(1) - (4)].type),value_int_to_string_util((yyvsp[(4) - (4)].terminal_values).value_type))==0)
                                                                                     {
                                                                                         createNode((yyvsp[(2) - (4)].varval),(yyvsp[(1) - (4)].type),"variable",1,line);
+                                                                                        buildTable_assign((yyvsp[(2) - (4)].varval), (yyvsp[(4) - (4)].terminal_values).RegQuad);
+                                                                                        print_quads();
                                                                                     }
                                                                                     else
                                                                                     {
@@ -2221,6 +2227,7 @@ yyreduce:
                                                                                     if (strcmp((yyvsp[(1) - (4)].type),(yyvsp[(4) - (4)].terminal_values).var_type)==0)
                                                                                     {
                                                                                         createNode((yyvsp[(2) - (4)].varval),(yyvsp[(1) - (4)].type),"variable",1,line);
+                                                                                        buildTable_assign((yyvsp[(2) - (4)].varval), (yyvsp[(4) - (4)].terminal_values).RegQuad);
                                                                                     }
                                                                                     else
                                                                                     {
@@ -2241,56 +2248,56 @@ yyreduce:
   case 39:
 
 /* Line 1455 of yacc.c  */
-#line 491 "Parser.y"
+#line 498 "Parser.y"
     {(yyval.type)="int";}
     break;
 
   case 40:
 
 /* Line 1455 of yacc.c  */
-#line 492 "Parser.y"
+#line 499 "Parser.y"
     {(yyval.type)="float";}
     break;
 
   case 41:
 
 /* Line 1455 of yacc.c  */
-#line 493 "Parser.y"
+#line 500 "Parser.y"
     {(yyval.type)="string";}
     break;
 
   case 42:
 
 /* Line 1455 of yacc.c  */
-#line 494 "Parser.y"
+#line 501 "Parser.y"
     {(yyval.type)="char";}
     break;
 
   case 43:
 
 /* Line 1455 of yacc.c  */
-#line 495 "Parser.y"
+#line 502 "Parser.y"
     {(yyval.type)="const";}
     break;
 
   case 44:
 
 /* Line 1455 of yacc.c  */
-#line 496 "Parser.y"
+#line 503 "Parser.y"
     {(yyval.type)="void";}
     break;
 
   case 45:
 
 /* Line 1455 of yacc.c  */
-#line 497 "Parser.y"
+#line 504 "Parser.y"
     {(yyval.type)="bool";}
     break;
 
   case 46:
 
 /* Line 1455 of yacc.c  */
-#line 501 "Parser.y"
+#line 508 "Parser.y"
     {
                                                 // x = 1+2+3      ========> case 1
                                                 // quad(+,1,2,T1)
@@ -2312,8 +2319,7 @@ yyreduce:
                                                         if (strcmp(var->datatype,value_int_to_string_util((yyvsp[(3) - (3)].terminal_values).value_type))==0)
                                                         {
                                                             var->init=1; 
-                                                            // flush_temp();
-                                                            buildTable_assign((yyvsp[(1) - (3)].varval), (yyvsp[(3) - (3)].terminal_values).var_name);
+                                                            buildTable_assign((yyvsp[(1) - (3)].varval), (yyvsp[(3) - (3)].terminal_values).RegQuad);
                                                             print_quads();
                                                         }
                                                         else
@@ -2342,7 +2348,7 @@ yyreduce:
   case 47:
 
 /* Line 1455 of yacc.c  */
-#line 547 "Parser.y"
+#line 553 "Parser.y"
     {
                                                 // x += 1+2+3      ========> case 1
                                                 // quad(+,1,2,T1)
@@ -2401,7 +2407,7 @@ yyreduce:
   case 48:
 
 /* Line 1455 of yacc.c  */
-#line 600 "Parser.y"
+#line 606 "Parser.y"
     {
                                                 struct Node *var = searchScope((yyvsp[(1) - (3)].varval));
                                                 if(var==NULL)
@@ -2452,7 +2458,7 @@ yyreduce:
   case 49:
 
 /* Line 1455 of yacc.c  */
-#line 646 "Parser.y"
+#line 652 "Parser.y"
     {
                                                 struct Node *var = searchScope((yyvsp[(1) - (3)].varval));
                                                 if(var==NULL)
@@ -2486,7 +2492,6 @@ yyreduce:
                                                             if (strcmp(var->datatype,(yyvsp[(3) - (3)].terminal_values).var_type)==0)
                                                             {
                                                                 var->init=1;
-                                                                printf("YOOOOOOOOOOOOOO\n");
                                                                 buildTable_exp("MUL", (yyvsp[(3) - (3)].terminal_values).RegQuad, (yyvsp[(1) - (3)].varval), 1);
                                                                 print_quads();
                                                             }
@@ -2504,7 +2509,7 @@ yyreduce:
   case 50:
 
 /* Line 1455 of yacc.c  */
-#line 692 "Parser.y"
+#line 697 "Parser.y"
     {
                                                 struct Node *var = searchScope((yyvsp[(1) - (3)].varval));
                                                 if(var==NULL)
@@ -2556,7 +2561,7 @@ yyreduce:
   case 51:
 
 /* Line 1455 of yacc.c  */
-#line 741 "Parser.y"
+#line 746 "Parser.y"
     {
                                         // 1+2+3
                                         // quad(+,1,2,T1)
@@ -2595,7 +2600,7 @@ yyreduce:
   case 52:
 
 /* Line 1455 of yacc.c  */
-#line 774 "Parser.y"
+#line 779 "Parser.y"
     {
                                         
                                        int res = express(1,(yyvsp[(1) - (3)].terminal_values).value_type,(yyvsp[(1) - (3)].terminal_values).var_type,(yyvsp[(1) - (3)].terminal_values).var_init,(yyvsp[(3) - (3)].terminal_values).value_type,(yyvsp[(3) - (3)].terminal_values).var_type,(yyvsp[(3) - (3)].terminal_values).var_init);
@@ -2622,7 +2627,7 @@ yyreduce:
   case 53:
 
 /* Line 1455 of yacc.c  */
-#line 795 "Parser.y"
+#line 800 "Parser.y"
     {
                                         int res =express(2,(yyvsp[(1) - (3)].terminal_values).value_type,(yyvsp[(1) - (3)].terminal_values).var_type,(yyvsp[(1) - (3)].terminal_values).var_init,(yyvsp[(3) - (3)].terminal_values).value_type,(yyvsp[(3) - (3)].terminal_values).var_type,(yyvsp[(3) - (3)].terminal_values).var_init);
                                         if (res == 1)
@@ -2648,7 +2653,7 @@ yyreduce:
   case 54:
 
 /* Line 1455 of yacc.c  */
-#line 815 "Parser.y"
+#line 820 "Parser.y"
     {
                                         int res =  express(3,(yyvsp[(1) - (3)].terminal_values).value_type,(yyvsp[(1) - (3)].terminal_values).var_type,(yyvsp[(1) - (3)].terminal_values).var_init,(yyvsp[(3) - (3)].terminal_values).value_type,(yyvsp[(3) - (3)].terminal_values).var_type,(yyvsp[(3) - (3)].terminal_values).var_init);
                                         if (res == 1)
@@ -2674,21 +2679,21 @@ yyreduce:
   case 55:
 
 /* Line 1455 of yacc.c  */
-#line 835 "Parser.y"
+#line 840 "Parser.y"
     {(yyval.terminal_values)=(yyvsp[(2) - (3)].terminal_values);}
     break;
 
   case 56:
 
 /* Line 1455 of yacc.c  */
-#line 836 "Parser.y"
+#line 841 "Parser.y"
     {(yyval.terminal_values)=(yyvsp[(1) - (1)].terminal_values);}
     break;
 
   case 57:
 
 /* Line 1455 of yacc.c  */
-#line 840 "Parser.y"
+#line 845 "Parser.y"
     {
                                         int res = cmp((yyvsp[(1) - (3)].terminal_values).value_type,(yyvsp[(1) - (3)].terminal_values).var_type,(yyvsp[(1) - (3)].terminal_values).var_init,(yyvsp[(3) - (3)].terminal_values).value_type,(yyvsp[(3) - (3)].terminal_values).var_type,(yyvsp[(3) - (3)].terminal_values).var_init);
                                         if (res==0)
@@ -2701,7 +2706,7 @@ yyreduce:
   case 58:
 
 /* Line 1455 of yacc.c  */
-#line 847 "Parser.y"
+#line 852 "Parser.y"
     {   
                                         int res = cmp((yyvsp[(1) - (3)].terminal_values).value_type,(yyvsp[(1) - (3)].terminal_values).var_type,(yyvsp[(1) - (3)].terminal_values).var_init,(yyvsp[(3) - (3)].terminal_values).value_type,(yyvsp[(3) - (3)].terminal_values).var_type,(yyvsp[(3) - (3)].terminal_values).var_init);
                                         if (res==0)
@@ -2714,7 +2719,7 @@ yyreduce:
   case 59:
 
 /* Line 1455 of yacc.c  */
-#line 854 "Parser.y"
+#line 859 "Parser.y"
     {    
                                         int res = cmp((yyvsp[(1) - (3)].terminal_values).value_type,(yyvsp[(1) - (3)].terminal_values).var_type,(yyvsp[(1) - (3)].terminal_values).var_init,(yyvsp[(3) - (3)].terminal_values).value_type,(yyvsp[(3) - (3)].terminal_values).var_type,(yyvsp[(3) - (3)].terminal_values).var_init);
                                         if (res==0)
@@ -2727,7 +2732,7 @@ yyreduce:
   case 60:
 
 /* Line 1455 of yacc.c  */
-#line 861 "Parser.y"
+#line 866 "Parser.y"
     { //print all parameters of cmp
                                
                                        
@@ -2742,7 +2747,7 @@ yyreduce:
   case 61:
 
 /* Line 1455 of yacc.c  */
-#line 870 "Parser.y"
+#line 875 "Parser.y"
     {
                                         int res = cmp((yyvsp[(1) - (3)].terminal_values).value_type,(yyvsp[(1) - (3)].terminal_values).var_type,(yyvsp[(1) - (3)].terminal_values).var_init,(yyvsp[(3) - (3)].terminal_values).value_type,(yyvsp[(3) - (3)].terminal_values).var_type,(yyvsp[(3) - (3)].terminal_values).var_init);
                                         if (res==0)
@@ -2755,7 +2760,7 @@ yyreduce:
   case 62:
 
 /* Line 1455 of yacc.c  */
-#line 877 "Parser.y"
+#line 882 "Parser.y"
     {
                                         int res = cmp((yyvsp[(1) - (3)].terminal_values).value_type,(yyvsp[(1) - (3)].terminal_values).var_type,(yyvsp[(1) - (3)].terminal_values).var_init,(yyvsp[(3) - (3)].terminal_values).value_type,(yyvsp[(3) - (3)].terminal_values).var_type,(yyvsp[(3) - (3)].terminal_values).var_init);
                                         if (res==0)
@@ -2768,7 +2773,7 @@ yyreduce:
   case 63:
 
 /* Line 1455 of yacc.c  */
-#line 884 "Parser.y"
+#line 889 "Parser.y"
     { 
                                                 if (boolchecker((yyvsp[(1) - (3)].terminal_values).var_type,(yyvsp[(1) - (3)].terminal_values).var_init)==0 || boolchecker((yyvsp[(3) - (3)].terminal_values).var_type,(yyvsp[(3) - (3)].terminal_values).var_init)==0)
                                                 {
@@ -2781,7 +2786,7 @@ yyreduce:
   case 64:
 
 /* Line 1455 of yacc.c  */
-#line 891 "Parser.y"
+#line 896 "Parser.y"
     {
                                                 if (boolchecker((yyvsp[(1) - (3)].terminal_values).var_type,(yyvsp[(1) - (3)].terminal_values).var_init)==0 || boolchecker((yyvsp[(3) - (3)].terminal_values).var_type,(yyvsp[(3) - (3)].terminal_values).var_init)==0)
                                                 {
@@ -2794,7 +2799,7 @@ yyreduce:
   case 65:
 
 /* Line 1455 of yacc.c  */
-#line 898 "Parser.y"
+#line 903 "Parser.y"
     {
                                                 if (boolchecker((yyvsp[(2) - (2)].terminal_values).var_type,(yyvsp[(2) - (2)].terminal_values).var_init)==0)
                                                 {
@@ -2806,7 +2811,7 @@ yyreduce:
   case 66:
 
 /* Line 1455 of yacc.c  */
-#line 907 "Parser.y"
+#line 912 "Parser.y"
     {
                             (yyval.terminal_values)= (yyvsp[(1) - (1)].terminal_values);
                         }
@@ -2815,7 +2820,7 @@ yyreduce:
   case 67:
 
 /* Line 1455 of yacc.c  */
-#line 910 "Parser.y"
+#line 915 "Parser.y"
     {
                             (yyval.terminal_values).value_type = 2;
                             char* str = malloc(20); // Allocate memory for the string
@@ -2829,7 +2834,7 @@ yyreduce:
   case 68:
 
 /* Line 1455 of yacc.c  */
-#line 918 "Parser.y"
+#line 923 "Parser.y"
     {
                             (yyval.terminal_values).value_type = 3;
                             char* str = malloc(20); // Allocate memory for the string
@@ -2843,7 +2848,7 @@ yyreduce:
   case 69:
 
 /* Line 1455 of yacc.c  */
-#line 926 "Parser.y"
+#line 931 "Parser.y"
     {
                             (yyval.terminal_values).value_type = 4;
                             (yyval.terminal_values).var_name = (yyvsp[(1) - (1)].stringval);
@@ -2853,7 +2858,7 @@ yyreduce:
   case 70:
 
 /* Line 1455 of yacc.c  */
-#line 930 "Parser.y"
+#line 935 "Parser.y"
     {
                             (yyval.terminal_values).value_type = 5;
                             char str[2];
@@ -2866,7 +2871,7 @@ yyreduce:
   case 71:
 
 /* Line 1455 of yacc.c  */
-#line 937 "Parser.y"
+#line 942 "Parser.y"
     {
                             (yyval.terminal_values).value_type = 6;
                             (yyval.terminal_values).var_name = "true";
@@ -2876,7 +2881,7 @@ yyreduce:
   case 72:
 
 /* Line 1455 of yacc.c  */
-#line 941 "Parser.y"
+#line 946 "Parser.y"
     {
                             (yyval.terminal_values).value_type = 6;
                             (yyval.terminal_values).var_name = "false";
@@ -2886,7 +2891,7 @@ yyreduce:
   case 73:
 
 /* Line 1455 of yacc.c  */
-#line 948 "Parser.y"
+#line 953 "Parser.y"
     {
                             (yyval.terminal_values).value_type = 1;
                             struct Node *node  = searchScope((yyvsp[(1) - (1)].varval));
@@ -2900,7 +2905,6 @@ yyreduce:
                                     (yyval.terminal_values).var_name = (yyvsp[(1) - (1)].varval);
                                     (yyval.terminal_values).var_type=node->datatype; 
                                     (yyval.terminal_values).var_init=node->init;
-                                    // $$.isUsed_in_Calc = 0;
                                     (yyval.terminal_values).RegQuad = (yyvsp[(1) - (1)].varval);
                                 }else
                                 {
@@ -2913,110 +2917,105 @@ yyreduce:
   case 81:
 
 /* Line 1455 of yacc.c  */
-#line 989 "Parser.y"
+#line 993 "Parser.y"
     {printf("While Multiple Statements\n");}
     break;
 
   case 82:
 
 /* Line 1455 of yacc.c  */
-#line 994 "Parser.y"
+#line 998 "Parser.y"
     {}
     break;
 
   case 83:
 
 /* Line 1455 of yacc.c  */
-#line 995 "Parser.y"
+#line 999 "Parser.y"
     {}
     break;
 
   case 84:
 
 /* Line 1455 of yacc.c  */
-#line 996 "Parser.y"
+#line 1000 "Parser.y"
     {}
     break;
 
   case 85:
 
 /* Line 1455 of yacc.c  */
-#line 997 "Parser.y"
+#line 1001 "Parser.y"
     {}
     break;
 
   case 86:
 
 /* Line 1455 of yacc.c  */
-#line 1002 "Parser.y"
-    {  
-                                                                                                
-                                // Head_for_push();
-                                // struct Node *var = getHead();push(var);
-                                //if for loop is in start of the program
-                            }
+#line 1006 "Parser.y"
+    { }
     break;
 
   case 87:
 
 /* Line 1455 of yacc.c  */
-#line 1010 "Parser.y"
+#line 1009 "Parser.y"
     { scopePush();createNode((yyvsp[(2) - (4)].varval),"int","variable",1,line);}
     break;
 
   case 89:
 
 /* Line 1455 of yacc.c  */
-#line 1019 "Parser.y"
+#line 1018 "Parser.y"
     {}
     break;
 
   case 90:
 
 /* Line 1455 of yacc.c  */
-#line 1023 "Parser.y"
+#line 1022 "Parser.y"
     {printf("Switch Statement\n");}
     break;
 
   case 92:
 
 /* Line 1455 of yacc.c  */
-#line 1027 "Parser.y"
+#line 1026 "Parser.y"
     {printf("Case Statement multiple statements\n");}
     break;
 
   case 93:
 
 /* Line 1455 of yacc.c  */
-#line 1028 "Parser.y"
+#line 1027 "Parser.y"
     {printf("Default Statement multiple statements\n");}
     break;
 
   case 94:
 
 /* Line 1455 of yacc.c  */
-#line 1032 "Parser.y"
+#line 1031 "Parser.y"
     {printf("Return Statement with expression\n");}
     break;
 
   case 95:
 
 /* Line 1455 of yacc.c  */
-#line 1033 "Parser.y"
+#line 1032 "Parser.y"
     {printf("Return Statement without expression\n");}
     break;
 
   case 96:
 
 /* Line 1455 of yacc.c  */
-#line 1037 "Parser.y"
+#line 1036 "Parser.y"
     {printf("Repeat Until Statement scope\n");}
     break;
 
 
 
 /* Line 1455 of yacc.c  */
-#line 3020 "y.tab.c"
+#line 3019 "y.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -3228,7 +3227,7 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 1039 "Parser.y"
+#line 1038 "Parser.y"
 
 
 int main() {

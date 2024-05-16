@@ -2,11 +2,11 @@
 #define STACK_H
 
 // Define the maximum size of the stack
-#define MAX_SIZE 100
+#define SIZE 100
 
 // Define the structure of a stack
 typedef struct {
-    int items[MAX_SIZE];
+    int items[SIZE];
     int top;
 } Stack;
 

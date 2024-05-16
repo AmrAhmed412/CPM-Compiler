@@ -436,6 +436,10 @@ declaration:
                                                                                 printf("Variable already declared\n");
                                                                             }else{
                                                                                 createNode($2,$1,"variable",0,line);
+
+                                                                                buildTable_exp("ASSIGN","",$2,0);
+                                                                                print_quads();
+
                                                                             }
                                                                             line++;
                                                                         }
@@ -458,6 +462,8 @@ declaration:
                                                                                     if (strcmp($1,value_int_to_string_util($4.value_type))==0)
                                                                                     {
                                                                                         createNode($2,$1,"variable",1,line);
+                                                                                        buildTable_assign($2, $4.RegQuad);
+                                                                                        print_quads();
                                                                                     }
                                                                                     else
                                                                                     {
@@ -470,6 +476,7 @@ declaration:
                                                                                     if (strcmp($1,$4.var_type)==0)
                                                                                     {
                                                                                         createNode($2,$1,"variable",1,line);
+                                                                                        buildTable_assign($2, $4.RegQuad);
                                                                                     }
                                                                                     else
                                                                                     {
@@ -519,8 +526,7 @@ assignment:
                                                         if (strcmp(var->datatype,value_int_to_string_util($3.value_type))==0)
                                                         {
                                                             var->init=1; 
-                                                            // flush_temp();
-                                                            buildTable_assign($1, $3.var_name);
+                                                            buildTable_assign($1, $3.RegQuad);
                                                             print_quads();
                                                         }
                                                         else
@@ -957,7 +963,6 @@ variableValue:
                                     $$.var_name = $1;
                                     $$.var_type=node->datatype; 
                                     $$.var_init=node->init;
-                                    // $$.isUsed_in_Calc = 0;
                                     $$.RegQuad = $1;
                                 }else
                                 {
@@ -998,12 +1003,7 @@ forExpression:
     ;
 
 forStatement:
-FOR ForBracket forScope    {  
-                                                                                                
-                                // Head_for_push();
-                                // struct Node *var = getHead();push(var);
-                                //if for loop is in start of the program
-                            }
+FOR ForBracket forScope    { }
     ;
 bora3y:
 INT VARIABLE ASSIGN INTEGER_LITERAL { scopePush();createNode($2,"int","variable",1,line);};

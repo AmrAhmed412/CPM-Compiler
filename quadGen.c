@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "stack.h"
 
 #define MAX_SIZE 300
 
@@ -25,29 +26,6 @@ void add_quad(char *op, char *arg1, char *arg2, char *result) {
     //apppend to global list
     quads[quad_idx++] = quad;
 }
-
-// void add_temp_quad(char *op, char *arg1, char *arg2, char *result) {
-//     struct Quad quad;
-//     strcpy(quad.op, op);
-//     strcpy(quad.arg1, arg1);
-//     strcpy(quad.arg2, arg2);
-//     strcpy(quad.result, result);
-
-//     //apppend to global list
-//     tempQuad[temp_idx++] = quad;
-// }
-
-
-// void flush_temp() {
-//     for (int i = 0; i < temp_idx; i++) {
-//         struct Quad quad = tempQuad[i];
-//         if (strcmp(quad.op, "") == 0) {
-//             break;
-//         }
-//         add_quad(quad.op, quad.arg1, quad.arg2, quad.result);
-//     }
-//     temp_idx = 0;
-// }
 
 void print_quads() {
     //print non empty quads
@@ -98,7 +76,7 @@ char* buildTable_exp(char* op, char* arg1, char* arg2, int isAssign) {
         printf("arg1 = %s\n", arg1);
         printf("arg2 = %s\n", arg2);
         printf("T = %s\n", T);
-        add_quad(":=", T, "", arg2);
+        add_quad("ASSIGN", T, "", arg2);
     }
     // print_quads();
     inc_T_idx();
@@ -114,11 +92,11 @@ void buildTable_assign(char* arg1, char* arg2){
     int useLast = get_last_T(T);
     if (useLast == 1)
     {
-        add_quad(":=",T,"", arg1);
+        add_quad("ASSIGN",T,"", arg1);
     }
     else
     {
-        add_quad(":=",arg2,"", arg1);
+        add_quad("ASSIGN",arg2,"", arg1);
     }
 }
 

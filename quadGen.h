@@ -11,13 +11,11 @@ struct Quad {
 };
 
 void add_quad(char *op, char *arg1, char *arg2, char *result);
-// void add_temp_quad(char *op, char *arg1, char *arg2, char *result);
 
 
 void flush_temp();
 
 int get_last_T(char *T_id);
-// int get_last_T_inTemp(char *T_id);
 
 void inc_T_idx();
 void inc_L_idx();
