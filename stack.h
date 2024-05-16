@@ -3,25 +3,25 @@
 
 #include <stdio.h>
 #include <stdlib.h> // For malloc and free
-#include "linked_list.h"
-#include <string.h>
 
-#define MAX_SIZE 100 // Maximum size of the stack
+// Define the maximum size of the stack
+#define MAX_SIZE 100
 
-struct Stack
-{
-    int index;
-    struct Node *items[MAX_SIZE];
-    struct Node *top;
-};
+// Define the structure of a stack
+typedef struct {
+    int items[MAX_SIZE];
+    int top;
+} Stack;
+
 
 // Function declarations
-void initializeStack();
-int isFull();
-int isEmpty();
-void push(struct Node *head);
-struct Node *pop();
-struct Node *peek();
-struct Node *searchStack(char *name);
+void initialize(Stack *stack);
+int isEmpty(Stack *stack);
+int isFull(Stack *stack);
+void push(Stack *stack, int value);
+int pop(Stack *stack);
+int peek(Stack *stack);
+void display(Stack *stack);
+
 
 #endif // STACK_H

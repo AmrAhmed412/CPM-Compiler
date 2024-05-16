@@ -1,7 +1,7 @@
 all: a.exe
 
-a.exe: y.tab.c lex.yy.c
-    gcc y.tab.c lex.yy.c -o a.exe
+a.exe: y.tab.c lex.yy.c linked_list.c linked_list.h utils.c utils.h parameters.c parameters.h 
+    gcc y.tab.c lex.yy.c linked_list.c linked_list.h utils.c utils.h parameters.c parameters.h -o a.exe
 
 y.tab.c: Parser.y
     bison --yacc Parser.y -d

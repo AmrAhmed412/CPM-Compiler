@@ -1,106 +1,59 @@
-#include "stack.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "stack.h"
 #include <string.h>
 
-struct Stack *globalStack;
-
-// Function definitions
-void initializeStack()
-{
-    globalStack = (struct Stack *)malloc(sizeof(struct Stack));
-    globalStack->index = -1; // Initialize index of the stack to -1 (empty stack)
-    globalStack->top = NULL; // Initialize top of the stack to -1 (empty stack)
+// Function to initialize the stack
+void initialize(Stack *stack) {
+    stack->top = -1; // Initialize top to -1 (empty stack)
 }
 
-int isFull()
-{
-    return globalStack->index == MAX_SIZE - 1;
+// Function to check if the stack is empty
+int isEmpty(Stack *stack) {
+    return stack->top == -1;
 }
 
-int isEmpty()
-{
-    return globalStack->index == -1;
+// Function to check if the stack is full
+int isFull(Stack *stack) {
+    return stack->top == MAX_SIZE - 1;
 }
 
-void push(struct Node *head)
-{
-    if (isFull())
-    {
+// Function to push an element onto the stack
+void push(Stack *stack, int value) {
+    if (isFull(stack)) {
         printf("Stack overflow! Cannot push element.\n");
+        return;
     }
-    else
-    {
-        globalStack->index++;
-        globalStack->items[globalStack->index] = head;
-        globalStack->top = head;
-    }
+    stack->items[++stack->top] = value;
 }
 
-struct Node *pop()
-{
-    if (isEmpty())
-    {
+// Function to pop an element from the stack
+int pop(Stack *stack) {
+    if (isEmpty(stack)) {
         printf("Stack underflow! Cannot pop element.\n");
-        return NULL; // Return a special value indicating stack underflow
+        return -1;
     }
-    else
-    {
-        struct Node *poppedValue = globalStack->items[globalStack->index];
-        globalStack->index--;
-        globalStack->top = globalStack->items[globalStack->index];
-        return poppedValue;
-    }
+    return stack->items[stack->top--];
 }
 
-struct Node *peek()
-{
-    if (isEmpty())
-    {
+// Function to peek the top element of the stack without removing it
+int peek(Stack *stack) {
+    if (isEmpty(stack)) {
         printf("Stack is empty! Cannot peek.\n");
-        return NULL; // Return a special value indicating empty stack
+        return -1;
     }
-    else
-    {
-        return globalStack->top;
-    }
+    return stack->items[stack->top];
 }
 
-// Function to display the stack
-void displayStack()
-{
-    if (isEmpty())
-    {
+// Function to display the elements of the stack
+void display(Stack *stack) {
+    if (isEmpty(stack)) {
         printf("Stack is empty!\n");
+        return;
     }
-    else
-    {
-        printf("Stack contents:\n");
-        for (int i = globalStack->index; i >= 0; i--)
-        {
-            displayListStack(globalStack->items[i]);
-            printf("\n");
-        }
+    printf("Stack elements: ");
+    for (int i = stack->top; i >= 0; i--) {
+        printf("%d ", stack->items[i]);
     }
-}
-
-struct Node *searchStack(char *name)
-{
-
-    for (int i = globalStack->index; i >= 0; i--)
-    {
-
-        displayListStack(globalStack->items[i]);
-        // printf("Searching in stack number:%d\n", i + 1);
-        struct Node *current = globalStack->items[i];
-        while (current != NULL)
-        {
-            if (strcmp(current->name, name) == 0)
-            {
-                return current; // Element found in the stack
-            }
-            current = current->next;
-        }
-    }
-    return NULL;
+    printf("\n");
 }
