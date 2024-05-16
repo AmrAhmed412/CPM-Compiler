@@ -44,48 +44,45 @@
      STRING = 260,
      CHAR = 261,
      CONST = 262,
-     ENUM = 263,
-     VOID = 264,
-     BOOL = 265,
-     IF = 266,
-     ELSE = 267,
-     WHILE = 268,
-     FOR = 269,
-     SWITCH = 270,
-     CASE = 271,
-     DEFAULT = 272,
-     BREAK = 273,
-     CONTINUE = 274,
-     RETURN = 275,
-     REPEAT = 276,
-     UNTIL = 277,
-     STRING_LITERAL = 278,
-     CHAR_LITERAL = 279,
-     INTEGER_LITERAL = 280,
-     FLOAT_LITERAL = 281,
-     BOOLEAN_TRUE = 282,
-     BOOLEAN_FALSE = 283,
-     VARIABLE = 284,
-     PLUS = 285,
-     MINUS = 286,
-     MULTIPLY = 287,
-     DIVIDE = 288,
-     AND = 289,
-     OR = 290,
-     NOT = 291,
-     EQUAL = 292,
-     NOT_EQUAL = 293,
-     GREATER = 294,
-     LESS = 295,
-     GREATER_EQUAL = 296,
-     LESS_EQUAL = 297,
-     ASSIGN = 298,
-     PLUS_ASSIGN = 299,
-     MINUS_ASSIGN = 300,
-     MULTIPLY_ASSIGN = 301,
-     DIVIDE_ASSIGN = 302,
-     INCREMENT = 303,
-     DECREMENT = 304
+     VOID = 263,
+     BOOL = 264,
+     IF = 265,
+     ELSE = 266,
+     WHILE = 267,
+     FOR = 268,
+     SWITCH = 269,
+     CASE = 270,
+     DEFAULT = 271,
+     BREAK = 272,
+     CONTINUE = 273,
+     RETURN = 274,
+     REPEAT = 275,
+     UNTIL = 276,
+     STRING_LITERAL = 277,
+     CHAR_LITERAL = 278,
+     INTEGER_LITERAL = 279,
+     FLOAT_LITERAL = 280,
+     BOOLEAN_TRUE = 281,
+     BOOLEAN_FALSE = 282,
+     VARIABLE = 283,
+     PLUS = 284,
+     MINUS = 285,
+     MULTIPLY = 286,
+     DIVIDE = 287,
+     AND = 288,
+     OR = 289,
+     NOT = 290,
+     EQUAL = 291,
+     NOT_EQUAL = 292,
+     GREATER = 293,
+     LESS = 294,
+     GREATER_EQUAL = 295,
+     LESS_EQUAL = 296,
+     ASSIGN = 297,
+     PLUS_ASSIGN = 298,
+     MINUS_ASSIGN = 299,
+     MULTIPLY_ASSIGN = 300,
+     DIVIDE_ASSIGN = 301
    };
 #endif
 /* Tokens.  */
@@ -94,48 +91,45 @@
 #define STRING 260
 #define CHAR 261
 #define CONST 262
-#define ENUM 263
-#define VOID 264
-#define BOOL 265
-#define IF 266
-#define ELSE 267
-#define WHILE 268
-#define FOR 269
-#define SWITCH 270
-#define CASE 271
-#define DEFAULT 272
-#define BREAK 273
-#define CONTINUE 274
-#define RETURN 275
-#define REPEAT 276
-#define UNTIL 277
-#define STRING_LITERAL 278
-#define CHAR_LITERAL 279
-#define INTEGER_LITERAL 280
-#define FLOAT_LITERAL 281
-#define BOOLEAN_TRUE 282
-#define BOOLEAN_FALSE 283
-#define VARIABLE 284
-#define PLUS 285
-#define MINUS 286
-#define MULTIPLY 287
-#define DIVIDE 288
-#define AND 289
-#define OR 290
-#define NOT 291
-#define EQUAL 292
-#define NOT_EQUAL 293
-#define GREATER 294
-#define LESS 295
-#define GREATER_EQUAL 296
-#define LESS_EQUAL 297
-#define ASSIGN 298
-#define PLUS_ASSIGN 299
-#define MINUS_ASSIGN 300
-#define MULTIPLY_ASSIGN 301
-#define DIVIDE_ASSIGN 302
-#define INCREMENT 303
-#define DECREMENT 304
+#define VOID 263
+#define BOOL 264
+#define IF 265
+#define ELSE 266
+#define WHILE 267
+#define FOR 268
+#define SWITCH 269
+#define CASE 270
+#define DEFAULT 271
+#define BREAK 272
+#define CONTINUE 273
+#define RETURN 274
+#define REPEAT 275
+#define UNTIL 276
+#define STRING_LITERAL 277
+#define CHAR_LITERAL 278
+#define INTEGER_LITERAL 279
+#define FLOAT_LITERAL 280
+#define BOOLEAN_TRUE 281
+#define BOOLEAN_FALSE 282
+#define VARIABLE 283
+#define PLUS 284
+#define MINUS 285
+#define MULTIPLY 286
+#define DIVIDE 287
+#define AND 288
+#define OR 289
+#define NOT 290
+#define EQUAL 291
+#define NOT_EQUAL 292
+#define GREATER 293
+#define LESS 294
+#define GREATER_EQUAL 295
+#define LESS_EQUAL 296
+#define ASSIGN 297
+#define PLUS_ASSIGN 298
+#define MINUS_ASSIGN 299
+#define MULTIPLY_ASSIGN 300
+#define DIVIDE_ASSIGN 301
 
 
 
@@ -145,19 +139,35 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 12 "Parser.y"
+#line 20 "Parser.y"
 
-	int integerval;               /* integer value */
-	float floatval;               /* float Value */
-    char * stringval;             /* string value */
-	char  charval;               /* character value */
-	char * varval ;                    	/* VARIABLE Value */
-    bool boolval;               /* boolean value */
+    char* type;                     /* data type    */
+	int integerval;                /* integer value */
+	float floatval;               /* float Value    */
+    char * stringval;            /* string value    */
+	char  charval;              /* character value  */
+    char * varval ;            /* VARIABLE Value    */
+    int boolval;              /* boolean value      */
+    int compare;             /* comparison value    */
+
+    struct {
+    int value_type; //1-6 for variable, int, float, string, char, bool
+    char* var_type; //datatype of variable
+    int var_init;   //if variable is initialized or not
+    }terminal_values; /* terminal values */
+
+    struct {
+   
+
+    }callParameters;
+
+    
+
 
 
 
 /* Line 1676 of yacc.c  */
-#line 161 "y.tab.h"
+#line 171 "y.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
