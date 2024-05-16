@@ -291,48 +291,62 @@ parameters:
 
 declaration:
     typeSpecifier VARIABLE                                          {
-                                                                        struct Node *var = searchScope($2);
-                                                                        
-                                                                        if(var!=NULL){
-                                                                            printf("Variable already declared\n");
-                                                                        }else{
-                                                                            createNode($2,$1,"variable",0,line);
+                                                                        if (strcmp($1,"void")!=0)
+                                                                        {
+                                                                            struct Node *var = searchScope($2);
+                                                                            
+                                                                            if(var!=NULL){
+                                                                                printf("Variable already declared\n");
+                                                                            }else{
+                                                                                createNode($2,$1,"variable",0,line);
+                                                                            }
+                                                                            line++;
                                                                         }
-                                                                        line++;
+                                                                        else
+                                                                        {
+                                                                            printf("Void cannot be assigned to a variable\n");
+                                                                        }
                                                                     }
 
     | typeSpecifier VARIABLE ASSIGN expression                      {
-                                                                       
-                                                                        struct Node *var = searchScope($2);
-                                                                       
-                                                                        if(var!=NULL){
-                                                                            printf("Variable already declared\n");
-                                                                        }else{
-                                                                            if ($4.value_type!=1)
-                                                                            {
-                                                                                if (strcmp($1,value_int_to_string_util($4.value_type))==0)
+                                                                        if (strcmp($1,"void")!=0)
+                                                                        {
+                                                                            struct Node *var = searchScope($2);
+                                                                        
+                                                                            if(var!=NULL){
+                                                                                printf("Variable already declared\n");
+                                                                            }else{
+                                                                                if ($4.value_type!=1)
                                                                                 {
-                                                                                    createNode($2,$1,"variable",1,line);
+                                                                                    if (strcmp($1,value_int_to_string_util($4.value_type))==0)
+                                                                                    {
+                                                                                        createNode($2,$1,"variable",1,line);
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        printf("Type Mismatch\n");
+                                                                                    
+                                                                                    }
                                                                                 }
                                                                                 else
                                                                                 {
-                                                                                    printf("Type Mismatch\n");
-                                                                                
+                                                                                    if (strcmp($1,$4.var_type)==0)
+                                                                                    {
+                                                                                        createNode($2,$1,"variable",1,line);
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        printf("Type Mismatch\n");
+                                                                                    }
                                                                                 }
                                                                             }
-                                                                            else
-                                                                            {
-                                                                                if (strcmp($1,var->var_type)==0)
-                                                                                {
-                                                                                    createNode($2,$1,"variable",1,line);
-                                                                                }
-                                                                                  else
-                                                                                {
-                                                                                    printf("Type Mismatch\n");
-                                                                                }
-                                                                            }
+                                                                            line++;
                                                                         }
-                                                                        line++;
+                                                                        else
+                                                                        {
+                                                                            printf("Void cannot be assigned to a variable\n");
+                                                                        }
+                                                                       
                                                                     }
     ;
 
@@ -355,12 +369,31 @@ assignment:
                                                 }
                                                 else
                                                 {
-                                                       if (strcmp($3,var->datatype)!=0)
+                                                    if ($3.value_type!=1)
+                                                    {
+                                                        if (strcmp(var->datatype,value_int_to_string_util($3.value_type))==0)
+                                                        {
+                                                           var->init=1;  
+                                                        }
+                                                        else
+                                                        {
+                                                            printf("Type Mismatch\n");
+                                                        
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        if (strcmp(var->datatype,$3.var_type)==0)
+                                                        {
+                                                            var->init=1;  
+                                                        }
+                                                            else
                                                         {
                                                             printf("Type Mismatch\n");
                                                         }
-                                                    
-                                                    var->init=1;  
+                                                    }
+                            
+                                                    // var->init=1;  
                                                 }
                                                 line++;
                                             }
@@ -378,12 +411,29 @@ assignment:
                                                     }
                                                     else
                                                     {
-                                                        
-                                                        if (strcmp($1,var->datatype)!=0)
+                                                        if ($3.value_type!=1)
                                                         {
-                                                            printf("Type Mismatch\n");
+                                                            if (strcmp(var->datatype,value_int_to_string_util($3.value_type))==0)
+                                                            {
+                                                            var->init=1;  
+                                                            }
+                                                            else
+                                                            {
+                                                                printf("Type Mismatch\n");
+                                                            
+                                                            }
                                                         }
-
+                                                        else
+                                                        {
+                                                            if (strcmp(var->datatype,$3.var_type)==0)
+                                                            {
+                                                                var->init=1;  
+                                                            }
+                                                                else
+                                                            {
+                                                                printf("Type Mismatch\n");
+                                                            }
+                                                        }
                                                     }
                                                 }
                                                 line++;
@@ -402,12 +452,29 @@ assignment:
                                                     }
                                                     else
                                                     {
-                                                        
-                                                        if (strcmp($1,var->datatype)!=0)
+                                                       if ($3.value_type!=1)
                                                         {
-                                                            printf("Type Mismatch\n");
+                                                            if (strcmp(var->datatype,value_int_to_string_util($3.value_type))==0)
+                                                            {
+                                                            var->init=1;  
+                                                            }
+                                                            else
+                                                            {
+                                                                printf("Type Mismatch\n");
+                                                            
+                                                            }
                                                         }
-
+                                                        else
+                                                        {
+                                                            if (strcmp(var->datatype,$3.var_type)==0)
+                                                            {
+                                                                var->init=1;  
+                                                            }
+                                                                else
+                                                            {
+                                                                printf("Type Mismatch\n");
+                                                            }
+                                                        }
                                                     }
                                                 }
                                                 line++;
@@ -427,12 +494,29 @@ assignment:
                                                     }
                                                      else
                                                     {
-                                                        
-                                                        if (strcmp($1,var->datatype)!=0)
+                                                      if ($3.value_type!=1)
                                                         {
-                                                            printf("Type Mismatch\n");
+                                                            if (strcmp(var->datatype,value_int_to_string_util($3.value_type))==0)
+                                                            {
+                                                            var->init=1;  
+                                                            }
+                                                            else
+                                                            {
+                                                                printf("Type Mismatch\n");
+                                                            
+                                                            }
                                                         }
-
+                                                        else
+                                                        {
+                                                            if (strcmp(var->datatype,$3.var_type)==0)
+                                                            {
+                                                                var->init=1;  
+                                                            }
+                                                                else
+                                                            {
+                                                                printf("Type Mismatch\n");
+                                                            }
+                                                        }
                                                     }
                                                 }
                                                 line++;
@@ -451,10 +535,28 @@ assignment:
                                                     }
                                                     else
                                                     {
-                                                        
-                                                        if (strcmp($1,var->datatype)!=0)
+                                                       if ($3.value_type!=1)
                                                         {
-                                                            printf("Type Mismatch\n");
+                                                            if (strcmp(var->datatype,value_int_to_string_util($3.value_type))==0)
+                                                            {
+                                                            var->init=1;  
+                                                            }
+                                                            else
+                                                            {
+                                                                printf("Type Mismatch\n");
+                                                            
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            if (strcmp(var->datatype,$3.var_type)==0)
+                                                            {
+                                                                var->init=1;  
+                                                            }
+                                                                else
+                                                            {
+                                                                printf("Type Mismatch\n");
+                                                            }
                                                         }
 
                                                     }
