@@ -32,7 +32,8 @@
     char* var_type; //datatype of variable
     int var_init;   //if variable is initialized or not
     char* var_name; //name of variable
-    int isUsed_in_Calc;
+    // int isUsed_in_Calc;
+    char* RegQuad; //last reg used in quadS
     }terminal_values; /* terminal values */
 
     struct {
@@ -566,14 +567,13 @@ assignment:
                                                     }
                                                     else
                                                     {
-                                                        // x+=1+2+3
-                                                        buildTable_exp("ADD", $3.var_name, $1,1);
-                                                        // print_quads();
                                                         if ($3.value_type!=1)
                                                         {
                                                             if (strcmp(var->datatype,value_int_to_string_util($3.value_type))==0)
                                                             {
-                                                                var->init=1;  
+                                                                var->init=1;
+                                                                buildTable_exp("ADD", $3.RegQuad, $1, 1);
+                                                                print_quads();
                                                             }
                                                             else
                                                             {
@@ -585,6 +585,8 @@ assignment:
                                                             if (strcmp(var->datatype,$3.var_type)==0)
                                                             {
                                                                 var->init=1;  
+                                                                buildTable_exp("ADD", $3.RegQuad, $1, 1);
+                                                                print_quads();
                                                             }
                                                             else
                                                             {
@@ -613,7 +615,9 @@ assignment:
                                                         {
                                                             if (strcmp(var->datatype,value_int_to_string_util($3.value_type))==0)
                                                             {
-                                                            var->init=1;  
+                                                                var->init=1; 
+                                                                buildTable_exp("SUB", $3.RegQuad, $1, 1);
+                                                                print_quads(); 
                                                             }
                                                             else
                                                             {
@@ -626,6 +630,8 @@ assignment:
                                                             if (strcmp(var->datatype,$3.var_type)==0)
                                                             {
                                                                 var->init=1;  
+                                                                buildTable_exp("SUB", $3.RegQuad, $1, 1);
+                                                                print_quads(); 
                                                             }
                                                                 else
                                                             {
@@ -655,7 +661,9 @@ assignment:
                                                         {
                                                             if (strcmp(var->datatype,value_int_to_string_util($3.value_type))==0)
                                                             {
-                                                            var->init=1;  
+                                                                var->init=1; 
+                                                                buildTable_exp("MUL", $3.RegQuad, $1, 1);
+                                                                print_quads();
                                                             }
                                                             else
                                                             {
@@ -667,7 +675,9 @@ assignment:
                                                         {
                                                             if (strcmp(var->datatype,$3.var_type)==0)
                                                             {
-                                                                var->init=1;  
+                                                                var->init=1;
+                                                                buildTable_exp("MUL", $3.RegQuad, $1, 1);
+                                                                print_quads();
                                                             }
                                                                 else
                                                             {
@@ -686,17 +696,21 @@ assignment:
                                                 }
                                                 else
                                                 {
+
                                                     if (var->init==0)
                                                     {
                                                         printf("Variable not initialized\n");
                                                     }
                                                     else
                                                     {
+                                                        buildTable_exp("DIV", $3.RegQuad, $1, 1);
+                                                        print_quads();  
                                                        if ($3.value_type!=1)
                                                         {
                                                             if (strcmp(var->datatype,value_int_to_string_util($3.value_type))==0)
                                                             {
-                                                            var->init=1;  
+                                                                var->init=1; 
+                                                                
                                                             }
                                                             else
                                                             {
@@ -708,7 +722,7 @@ assignment:
                                                         {
                                                             if (strcmp(var->datatype,$3.var_type)==0)
                                                             {
-                                                                var->init=1;  
+                                                                var->init=1; 
                                                             }
                                                                 else
                                                             {
@@ -732,12 +746,21 @@ expression:
                                         int res = express(0,$1.value_type,$1.var_type,$1.var_init,$3.value_type,$3.var_type,$3.var_init);
                                         if (res == 1)
                                         {
+                                            
+                                            //2+5+3
                                             // int isUsed[2];
                                             // int* temp =  buildTable_exp("ADD", $1.var_name, $1.isUsed_in_Calc,  $3.var_name, $3.isUsed_in_Calc, 0);
                                             // $1.isUsed_in_Calc = temp[0];
                                             // $3.isUsed_in_Calc = temp[1];
-                                            buildTable_exp("ADD", $1.var_name, $3.var_name, 0);
-                                            $$=$1;
+                                            
+                                            // buildTable_exp("ADD", $1.var_name, $3.var_name, 0);
+                                            // printf("res1 = %s\n",$1.RegQuad);
+                                            // printf("res2 = %s\n",$3.RegQuad);
+                                            printf("\n");
+                                            $$.var_type = $1.var_type;
+                                            $$.value_type = $1.value_type;
+                                            $$.var_init = $1.var_init;
+                                            $$.RegQuad = buildTable_exp("ADD", $1.RegQuad, $3.RegQuad, 0);
                                         }
                                         else
                                         {
@@ -752,12 +775,15 @@ expression:
                                        int res = express(1,$1.value_type,$1.var_type,$1.var_init,$3.value_type,$3.var_type,$3.var_init);
                                        if (res == 1)
                                         {
-                                            buildTable_exp("SUB", $1.var_name, $3.var_name,0);
+                                            printf("\n");
+                                            $$.var_type = $1.var_type;
+                                            $$.value_type = $1.value_type;
+                                            $$.var_init = $1.var_init;
+                                            $$.RegQuad = buildTable_exp("SUB", $1.RegQuad, $3.RegQuad, 0);
                                             //  int* temp =  buildTable_exp("SUB", $1.var_name, $1.isUsed_in_Calc,  $3.var_name, $3.isUsed_in_Calc, 0);
                                             // $1.isUsed_in_Calc = temp[0];
                                             // $3.isUsed_in_Calc = temp[1];
                                             // print_quads();
-                                            $$=$1;
                                         }
                                          else
                                         {
@@ -769,12 +795,15 @@ expression:
                                         int res =express(2,$1.value_type,$1.var_type,$1.var_init,$3.value_type,$3.var_type,$3.var_init);
                                         if (res == 1)
                                         {
-                                            buildTable_exp("MUL", $1.var_name, $3.var_name,0);
+                                            printf("\n");
+                                            $$.var_type = $1.var_type;
+                                            $$.value_type = $1.value_type;
+                                            $$.var_init = $1.var_init;
+                                            $$.RegQuad = buildTable_exp("MUL", $1.RegQuad, $3.RegQuad, 0);
                                             // int* temp =  buildTable_exp("MUL", $1.var_name, $1.isUsed_in_Calc,  $3.var_name, $3.isUsed_in_Calc, 0);
                                             // $1.isUsed_in_Calc = temp[0];
                                             // $3.isUsed_in_Calc = temp[1];
                                             // print_quads();
-                                            $$=$1;
                                         }
                                          else
                                         {
@@ -786,12 +815,15 @@ expression:
                                         int res =  express(3,$1.value_type,$1.var_type,$1.var_init,$3.value_type,$3.var_type,$3.var_init);
                                         if (res == 1)
                                         {
-                                            buildTable_exp("DIV", $1.var_name, $3.var_name,0);
+                                            printf("\n");
+                                            $$.var_type = $1.var_type;
+                                            $$.value_type = $1.value_type;
+                                            $$.var_init = $1.var_init;
+                                            $$.RegQuad = buildTable_exp("DIV", $1.RegQuad, $3.RegQuad, 0);
                                             // int* temp =  buildTable_exp("DIV", $1.var_name, $1.isUsed_in_Calc,  $3.var_name, $3.isUsed_in_Calc, 0);
                                             // $1.isUsed_in_Calc = temp[0];
                                             // $3.isUsed_in_Calc = temp[1];
                                             // print_quads();
-                                            $$=$1;
                                         }
                                          else
                                         {
@@ -879,14 +911,16 @@ values:
                             char* str = malloc(20); // Allocate memory for the string
                             sprintf(str, "%d", $1); // Convert the integer to a string
                             $$.var_name = str; 
-                            $$.isUsed_in_Calc = 0;
+                            // $$.isUsed_in_Calc = 0;
+                            $$.RegQuad = str;
                         }              
     | FLOAT_LITERAL     {
                             $$.value_type = 3;
                             char* str = malloc(20); // Allocate memory for the string
                             sprintf(str, "%f", $1); // Convert the integer to a string
                             $$.var_name = str;
-                            $$.isUsed_in_Calc = 0;
+                            // $$.isUsed_in_Calc = 0;
+                            $$.RegQuad = str;
                         } 
     | STRING_LITERAL    {
                             $$.value_type = 4;
@@ -923,7 +957,8 @@ variableValue:
                                     $$.var_name = $1;
                                     $$.var_type=node->datatype; 
                                     $$.var_init=node->init;
-                                    $$.isUsed_in_Calc = 0;
+                                    // $$.isUsed_in_Calc = 0;
+                                    $$.RegQuad = $1;
                                 }else
                                 {
                                     printf("Variable not initialized\n");

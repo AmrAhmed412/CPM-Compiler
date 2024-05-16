@@ -155,7 +155,8 @@ typedef union YYSTYPE
     char* var_type; //datatype of variable
     int var_init;   //if variable is initialized or not
     char* var_name; //name of variable
-    int isUsed_in_Calc;
+    // int isUsed_in_Calc;
+    char* RegQuad; //last reg used in quadS
     }terminal_values; /* terminal values */
 
     struct {
@@ -169,7 +170,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 173 "y.tab.h"
+#line 174 "y.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

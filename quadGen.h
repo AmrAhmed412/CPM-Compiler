@@ -27,8 +27,6 @@ int get_L_idx();
 
 void print_quads();
 
-void buildTable_exp(char* op, char* arg1, char* arg2,  int isAssign);
-// int* buildTable_exp(char* op, char* arg1, int isUsed1, char* arg2, int isUsed2,  int isAssign);
-// void add_in_temp(char* op, char* arg1, char* arg2);
+char* buildTable_exp(char* op, char* arg1, char* arg2, int isAssign);
 void buildTable_assign(char* arg1, char* arg2);
 #endif
