@@ -219,8 +219,7 @@ functionCall:
                                                         }
                                                     }
     | VARIABLE ASSIGN VARIABLE '(' callParameters ')' ';' 
-                                                            {
-                                                                printf("LMAOOOOOOOOOOOOOOOOOOOO\n");    
+                                                            {   
                                                                 struct Node* temp = searchScope($1);
                                                                 if (temp ==NULL)
                                                                 {
@@ -240,7 +239,144 @@ functionCall:
                                                                         int* param_value_type = get_param_value_type();
                                                                         char **param_var_type = get_param_var_type();
                                                                         int *param_var_init = get_param_var_init();
-                                                                           for (int i=0;i<idx;i++)
+                                                                        for (int i=0;i<idx;i++)
+                                                                        {
+                                                                            if (param_value_type[i]==1)
+                                                                            {
+                                                                                if (param_var_init[i]==0)
+                                                                                {
+                                                                                    printf("Variable not initialized\n");
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    printf("Variable: %s\n",param_var_type[i]);
+                                                                                    func_input_check(temp2->datatype,param_var_type[i],i);
+                                                                                }
+                                                                            }
+                                                                            else
+                                                                            {   
+                                                                                char *val_type = value_int_to_string(param_value_type[i]);
+                                                                                printf("Variable: %s\n",val_type);
+                                                                                func_input_check(temp2->datatype,val_type,i);
+                                                                            }
+                                                                        }
+                                                                        clear_call_params();
+                                                                    }
+                                                                }
+
+                                                            }
+    | VARIABLE '(' ')' ';'  {   
+                                struct Node* temp = searchScope($1);
+                                if (temp ==NULL)
+                                {
+                                    printf("Function not declared\n");
+                                }
+                                else
+                                {
+                                    func_type_check("",temp->datatype);
+                                    char *equal = strchr(temp->datatype, '=');
+                                    int index = (int)(equal - temp->datatype);
+                                    if (index!=0)
+                                    {
+                                        printf("Function's parameters are not passed to the function\n");
+                                    }
+                                }
+                            }
+    | VARIABLE '(' callParameters ')' ';'   {
+                                                struct Node* temp = searchScope($1);
+                                                if (temp ==NULL)
+                                                {
+                                                    printf("Function not declared\n");
+                                                }
+                                                else
+                                                {
+                                                   int flag =  func_type_check("",temp->datatype);
+                                                   if (flag !=0)
+                                                   {
+                                                        int idx = get_index();
+                                                        int* param_value_type = get_param_value_type();
+                                                        char **param_var_type = get_param_var_type();
+                                                        int *param_var_init = get_param_var_init();
+                                                        for (int i=0;i<idx;i++)
+                                                        {
+                                                            if (param_value_type[i]==1)
+                                                            {
+                                                                if (param_var_init[i]==0)
+                                                                {
+                                                                    printf("Variable not initialized\n");
+                                                                }
+                                                                else
+                                                                {
+                                                                    printf("Variable: %s\n",param_var_type[i]);
+                                                                    func_input_check(temp->datatype,param_var_type[i],i);
+                                                                }
+                                                            }
+                                                            else
+                                                            {   
+                                                                char *val_type = value_int_to_string(param_value_type[i]);
+                                                                printf("Variable: %s\n",val_type);
+                                                                func_input_check(temp->datatype,val_type,i);
+                                                            }
+                                                        }
+                                                        clear_call_params();
+                                                   }
+                                                   
+                                                }
+                                            }
+    | typeSpecifier VARIABLE ASSIGN VARIABLE '(' ')' ';'    {
+                                                                struct Node* temp = searchScope($2);
+                                                                if (temp ==NULL)
+                                                                {
+                                                                    struct Node* temp2 = searchScope($4);
+                                                                    if (temp2 ==NULL)
+                                                                    {
+                                                                        printf("Function not declared\n");
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        int flag =func_type_check($1,temp2->datatype);
+                                                                        if (flag !=0)
+                                                                        {
+                                                                            char *equal = strchr(temp2->datatype, '=');
+                                                                            int index = (int)(equal - temp2->datatype);
+                                                                            if (index!=0)
+                                                                            {
+                                                                                printf("Function's parameters are not passed to the function\n");
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                createNode($2,$1,"variable",1,line);
+                                                                                line++;
+                                                                            }
+                                                                        }
+                                                                       
+                                                                    }
+                                                                }
+                                                                else
+                                                                {
+                                                                    printf("Variable already declared\n");
+                                                                }
+                                                            }
+| typeSpecifier VARIABLE ASSIGN VARIABLE '(' callParameters ')' ';'    
+                                                            {
+                                                                struct Node* temp = searchScope($2);
+                                                                if (temp ==NULL)
+                                                                {
+                                                                    struct Node* temp2 = searchScope($4);
+                                                                    if (temp2 ==NULL)
+                                                                    {
+                                                                        printf("Function not declared\n");
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        int flag =func_type_check($1,temp2->datatype);
+                                                                        if (flag !=0)
+                                                                        {
+                                                                            int idx = get_index();
+                                                                            int* param_value_type = get_param_value_type();
+                                                                            char **param_var_type = get_param_var_type();
+                                                                            int *param_var_init = get_param_var_init();
+                                                                            for (int i=0;i<idx;i++)
                                                                             {
                                                                                 if (param_value_type[i]==1)
                                                                                 {
@@ -262,15 +398,16 @@ functionCall:
                                                                                 }
                                                                             }
                                                                             clear_call_params();
+                                                                        }
+                                                                       
                                                                     }
                                                                 }
-
+                                                                else
+                                                                {
+                                                                    printf("Variable already declared\n");
+                                                                }
                                                             }
-    | VARIABLE '(' ')' ';'  {printf("Function Call\n");}
-    | VARIABLE '(' callParameters ')' ';'  {printf("Function Call with Parameters\n");}
-    | typeSpecifier VARIABLE ASSIGN VARIABLE '(' ')' ';'  {printf("Function Call with Assignment\n");}
-    | typeSpecifier VARIABLE ASSIGN VARIABLE '(' callParameters ')' ';'  {printf("Function Call with Assignment and Parameters\n");}
-    ;
+;
 
 callParameters:             
     values      {
@@ -278,9 +415,7 @@ callParameters:
                 }  
     | callParameters','values      
                                 { 
-                                    printf("el index rabena yente2em menno: %d",get_index());
                                     addCallParams($3.value_type,$3.var_type,$3.var_init);
-                                    printf("el index rabena yente2em menno: %d",get_index());
                                 } 
     ;
 

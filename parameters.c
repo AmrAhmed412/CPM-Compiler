@@ -75,24 +75,34 @@ char **get_datatypes()
     return datatypes;
 }
 
-void func_type_check(char *var_datatype, char *func_datatype)
+int func_type_check(char *var_datatype, char *func_datatype)
 {
     char *arrow = strchr(func_datatype, '>');
     int index = (int)(arrow - func_datatype) + 1;
     int len = strlen(func_datatype) - index + 1;
     char *output = (char *)malloc(len);
     strncpy(output, func_datatype + (index), len);
-    if (output == "void")
+    // printf("output: %s\n", output);
+    if (strcmp(output, "void") == 0)
     {
-        printf("Void function cannot be assigned\n");
+        // printf("output: %s\n", output);
+
+        // printf("Var datatype: %s\n", var_datatype);
+        if (strlen(var_datatype) != 0)
+        {
+            printf("Void function cannot be assigned to a variable\n");
+            return 0;
+        }
     }
     else if (strcmp(var_datatype, output) != 0)
     {
-        printf("Datatype mismatch\n");
+        printf("Output datatype mismatch\n");
+        return 0;
     }
+    return 1;
 }
 
-void func_input_check(char *func_datatype, char *input_datatype, int input_idx)
+int func_input_check(char *func_datatype, char *input_datatype, int input_idx)
 {
     char *arrow = strchr(func_datatype, '=');
     int index = 0;
@@ -109,20 +119,23 @@ void func_input_check(char *func_datatype, char *input_datatype, int input_idx)
         while (token != NULL)
         {
             tokens[iter] = token;
-            printf("token: %s ,%d\n", tokens[iter], iter); // int int =>int
+            // printf("token: %s ,%d\n", tokens[iter], iter); // int int =>int
             iter++;
             token = strtok(NULL, delim); // Get the next token
         }
-        printf("input_data: %s , token: %s\n", input_datatype, tokens[input_idx]);
+        // printf("input_data: %s , token: %s\n", input_datatype, tokens[input_idx]);
         if (strcmp(input_datatype, tokens[input_idx]) != 0)
         {
             printf("Datatype mismatch in index: %d\n", input_idx);
+            return 0;
         }
     }
     else
     {
         printf("No input parameters\n");
+        return 0;
     }
+    return 1;
 }
 
 char *value_int_to_string(int value)
