@@ -19,5 +19,6 @@ int *get_param_var_init();
 char **get_param_var_name();
 void set_index(int value);
 void clear_call_params();
+char *getParamsTYPES();
 
 #endif

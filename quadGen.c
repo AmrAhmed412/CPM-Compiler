@@ -215,6 +215,25 @@ char* PopWhileLabel(){
 }
 
 
+void write_quad_to_file (){
+    FILE *f = fopen("quads.txt", "w");
+    if (f == NULL)
+    {
+        printf("Error opening file!\n");
+        exit(1);
+    }
+    fprintf(f, "OP\targ1\targ2\tresult\n");
+    for (int i = 0; i < quad_idx; i++)
+    {
+        struct Quad quad = quads[i];
+        if (strcmp(quad.op, "") != 0)
+        {
+            fprintf(f, "%s, %s, %s, %s\n", quad.op, quad.arg1, quad.arg2, quad.result);
+        }
+    }
+    fclose(f);
+}
+
 // void pushIf(char * gotoConditionReg){
 //     char str[20];
 //     sprintf(str, "%d", get_L_idx());

@@ -97,13 +97,14 @@
 
 %%
 
-program:              {printf("Empty Program ;-;\n");}      
-    | programStatements     { printf("Program\n");};                  
+program:                   
+    | programStatements
+    ;                  
 
 programStatements:         
-      statement programStatements                               {printf("Program statements\n");}
-    | function functionScope programStatements { display();} 
-    | function  functionScope {printf("Function Declaration with no parameters\n");}      
+      statement programStatements                              
+    | function functionScope programStatements 
+    | function  functionScope       
     | statement
     ;
 
@@ -118,11 +119,17 @@ typeSpecifier VARIABLE '(' parameters ')'                   {
                                                                 {
                                                                     char *temp = malloc(sizeof(char) * 1024);
                                                                     temp[0]='\0';
+
+                                                                    char * temp2 = malloc(sizeof(char) * 1024);
+                                                                    temp2[0]='\0';
+                                                                    strcat(temp2,getParamsTYPES());
+                                                                    add_quad("PROC", $1, $2, temp2);
+
                                                                     strcat(temp,convert_to_string());
                                                                     strcat(temp,"=>");
                                                                     strcat(temp,$1);
                                                                     createNode($2,temp,"function",-1,line);
-                                                                    line++;
+                                                                    // line++;
                                                                     scopePush();
                                                                     char** names = get_names();
                                                                     char** datatypes = get_datatypes();
@@ -131,10 +138,10 @@ typeSpecifier VARIABLE '(' parameters ')'                   {
                                                                     {
                                                                         createNode(names[i],datatypes[i],"variable",1,line);
                                                                     }
-                                                                    line++;
                                                                     free(temp);
                                                                     clear();
                                                                 }
+                                                                line++;
                                                             }
 | typeSpecifier VARIABLE '('')'                 {
                                                     struct Node *node = searchScope($2);
@@ -146,13 +153,14 @@ typeSpecifier VARIABLE '(' parameters ')'                   {
                                                     {
                                                         char *temp = malloc(sizeof(char) * 1024);
                                                         temp[0]='\0';
+                                                        add_quad("PROC", $1, $2, "");
                                                         strcat(temp,"=>");
                                                         strcat(temp,$1);
                                                         createNode($2,temp,"function",-1,line);
-                                                        line++;
                                                         scopePush();
                                                         free(temp);
                                                     }
+                                                    line++;
                                                 }
 ;
 
@@ -170,7 +178,7 @@ openScope:
 closeScope:
     '}' {   
 
-            printf("==============Symbol Table before popping==============\n");
+            // printf("==============Symbol Table before popping==============\n");
             // displayList();
             write_file();
             scopePop();
@@ -179,22 +187,22 @@ closeScope:
 
 
 inBlockscope:
-     inBlockscope statement    {printf("Block Scope\n");}
+     inBlockscope statement   
     |statement 
     ;
 
 statement:                 
-    declaration ';'           {}
-    | assignment ';'        {} 
-    | ifStatement           {printf("If Statement\n");}
-    | whileStatement        {printf("While Statement\n");}
-    | forStatement          {printf("For Statement\n");} 
-    | switchStatement       {printf("Switch Statement\n");}
-    | returnStatement       {printf("Return Statement\n");}
-    | repeatUntilStatement  {printf("Repeat Until Statement from statement\n");}
-    | functionCall       {printf("Function Call\n");}
-    | BREAK ';'        {printf("Break\n");}
-    | CONTINUE ';'      {printf("Continue\n");}
+    declaration ';'          
+    | assignment ';'        
+    | ifStatement           
+    | whileStatement        
+    | forStatement          
+    | switchStatement       
+    | returnStatement       
+    | repeatUntilStatement  
+    | functionCall       
+    | BREAK ';'        
+    | CONTINUE ';'      
     | error ';'     { yyerrok; }
     ;  
 
@@ -266,7 +274,6 @@ functionCall:
                                                                                     }
                                                                                     else
                                                                                     {
-                                                                                        printf("Variable: %s\n",param_var_type[i]);
                                                                                         good_in = func_input_check(temp2->datatype,param_var_type[i],i);
                                                                                         flag = flag && good_in;
 
@@ -276,7 +283,7 @@ functionCall:
                                                                                 else
                                                                                 {   
                                                                                     char *val_type = value_int_to_string(param_value_type[i]);
-                                                                                    printf("Variable: %s\n",val_type);
+                                                                                
                                                                                     good_in = func_input_check(temp2->datatype,val_type,i);
                                                                                     flag = flag && good_in;
                                                                                 }
@@ -349,7 +356,6 @@ functionCall:
                                                                 }
                                                                 else
                                                                 {
-                                                                    printf("Variable: %s\n",param_var_type[i]);
                                                                     good_in = func_input_check(temp->datatype,param_var_type[i],i);
                                                                     flag = flag && good_in;
                                                                 }
@@ -357,7 +363,6 @@ functionCall:
                                                             else
                                                             {   
                                                                 char *val_type = value_int_to_string(param_value_type[i]);
-                                                                printf("Variable: %s\n",val_type);
                                                                 good_in =  func_input_check(temp->datatype,val_type,i);
                                                                 flag = flag && good_in;
                                                             }
@@ -453,7 +458,6 @@ functionCall:
                                                                                     }
                                                                                     else
                                                                                     {
-                                                                                        printf("Variable: %s\n",param_var_type[i]);
                                                                                         good_in = func_input_check(temp2->datatype,param_var_type[i],i);
                                                                                         flag = flag && good_in;
                                                                                     }
@@ -461,7 +465,7 @@ functionCall:
                                                                                 else
                                                                                 {   
                                                                                     char *val_type = value_int_to_string(param_value_type[i]);
-                                                                                    printf("Variable: %s\n",val_type);
+                                                                                    
                                                                                     good_in = func_input_check(temp2->datatype,val_type,i);
                                                                                     flag = flag && good_in;
                                                                                 }
@@ -523,7 +527,7 @@ declaration:
                                                                                 createNode($2,$1,"variable",0,line);
 
                                                                                 buildTable_exp("ASSIGN","",$2,0);
-                                                                                print_quads();
+                                                                                // print_quads();
 
                                                                             }
                                                                             line++;
@@ -548,7 +552,7 @@ declaration:
                                                                                     {
                                                                                         createNode($2,$1,"variable",1,line);
                                                                                         buildTable_assign($2, $4.RegQuad);
-                                                                                        print_quads();
+                                                                                        // print_quads();
                                                                                     }
                                                                                     else
                                                                                     {
@@ -612,7 +616,7 @@ assignment:
                                                         {
                                                             var->init=1; 
                                                             buildTable_assign($1, $3.RegQuad);
-                                                            print_quads();
+                                                            // print_quads();
                                                         }
                                                         else
                                                         {
@@ -625,7 +629,7 @@ assignment:
                                                         {
                                                             var->init=1;  
                                                             buildTable_assign($1, $3.var_name);
-                                                            print_quads();
+                                                            // print_quads();
                                                         }
                                                         else
                                                         {
@@ -664,7 +668,7 @@ assignment:
                                                             {
                                                                 var->init=1;
                                                                 buildTable_exp("ADD", $3.RegQuad, $1, 1);
-                                                                print_quads();
+                                                                // print_quads();
                                                             }
                                                             else
                                                             {
@@ -677,7 +681,7 @@ assignment:
                                                             {
                                                                 var->init=1;  
                                                                 buildTable_exp("ADD", $3.RegQuad, $1, 1);
-                                                                print_quads();
+                                                                // print_quads();
                                                             }
                                                             else
                                                             {
@@ -708,7 +712,7 @@ assignment:
                                                             {
                                                                 var->init=1; 
                                                                 buildTable_exp("SUB", $3.RegQuad, $1, 1);
-                                                                print_quads(); 
+                                                                // print_quads(); 
                                                             }
                                                             else
                                                             {
@@ -722,7 +726,7 @@ assignment:
                                                             {
                                                                 var->init=1;  
                                                                 buildTable_exp("SUB", $3.RegQuad, $1, 1);
-                                                                print_quads(); 
+                                                                // print_quads(); 
                                                             }
                                                                 else
                                                             {
@@ -754,7 +758,7 @@ assignment:
                                                             {
                                                                 var->init=1; 
                                                                 buildTable_exp("MUL", $3.RegQuad, $1, 1);
-                                                                print_quads();
+                                                                // print_quads();
                                                             }
                                                             else
                                                             {
@@ -768,7 +772,7 @@ assignment:
                                                             {
                                                                 var->init=1;
                                                                 buildTable_exp("MUL", $3.RegQuad, $1, 1);
-                                                                print_quads();
+                                                                // print_quads();
                                                             }
                                                                 else
                                                             {
@@ -795,7 +799,7 @@ assignment:
                                                     else
                                                     {
                                                         buildTable_exp("DIV", $3.RegQuad, $1, 1);
-                                                        print_quads();  
+                                                        // print_quads();  
                                                        if ($3.value_type!=1)
                                                         {
                                                             if (strcmp(var->datatype,value_int_to_string_util($3.value_type))==0)
@@ -837,16 +841,6 @@ expression:
                                         int res = express(0,$1.value_type,$1.var_type,$1.var_init,$3.value_type,$3.var_type,$3.var_init);
                                         if (res == 1)
                                         {
-                                            
-                                            //2+5+3
-                                            // int isUsed[2];
-                                            // int* temp =  buildTable_exp("ADD", $1.var_name, $1.isUsed_in_Calc,  $3.var_name, $3.isUsed_in_Calc, 0);
-                                            // $1.isUsed_in_Calc = temp[0];
-                                            // $3.isUsed_in_Calc = temp[1];
-                                            
-                                            // buildTable_exp("ADD", $1.var_name, $3.var_name, 0);
-                                            // printf("res1 = %s\n",$1.RegQuad);
-                                            // printf("res2 = %s\n",$3.RegQuad);
                                             printf("\n");
                                             $$.var_type = $1.var_type;
                                             $$.value_type = $1.value_type;
@@ -871,10 +865,6 @@ expression:
                                             $$.value_type = $1.value_type;
                                             $$.var_init = $1.var_init;
                                             $$.RegQuad = buildTable_exp("SUB", $1.RegQuad, $3.RegQuad, 0);
-                                            //  int* temp =  buildTable_exp("SUB", $1.var_name, $1.isUsed_in_Calc,  $3.var_name, $3.isUsed_in_Calc, 0);
-                                            // $1.isUsed_in_Calc = temp[0];
-                                            // $3.isUsed_in_Calc = temp[1];
-                                            // print_quads();
                                         }
                                          else
                                         {
@@ -891,10 +881,7 @@ expression:
                                             $$.value_type = $1.value_type;
                                             $$.var_init = $1.var_init;
                                             $$.RegQuad = buildTable_exp("MUL", $1.RegQuad, $3.RegQuad, 0);
-                                            // int* temp =  buildTable_exp("MUL", $1.var_name, $1.isUsed_in_Calc,  $3.var_name, $3.isUsed_in_Calc, 0);
-                                            // $1.isUsed_in_Calc = temp[0];
-                                            // $3.isUsed_in_Calc = temp[1];
-                                            // print_quads();
+                                            
                                         }
                                          else
                                         {
@@ -911,10 +898,7 @@ expression:
                                             $$.value_type = $1.value_type;
                                             $$.var_init = $1.var_init;
                                             $$.RegQuad = buildTable_exp("DIV", $1.RegQuad, $3.RegQuad, 0);
-                                            // int* temp =  buildTable_exp("DIV", $1.var_name, $1.isUsed_in_Calc,  $3.var_name, $3.isUsed_in_Calc, 0);
-                                            // $1.isUsed_in_Calc = temp[0];
-                                            // $3.isUsed_in_Calc = temp[1];
-                                            // print_quads();
+                                            
                                         }
                                          else
                                         {
@@ -1010,7 +994,6 @@ values:
                             char* str = malloc(20); // Allocate memory for the string
                             sprintf(str, "%d", $1); // Convert the integer to a string
                             $$.var_name = str; 
-                            // $$.isUsed_in_Calc = 0;
                             $$.RegQuad = str;
                         }              
     | FLOAT_LITERAL     {
@@ -1018,7 +1001,6 @@ values:
                             char* str = malloc(20); // Allocate memory for the string
                             sprintf(str, "%f", $1); // Convert the integer to a string
                             $$.var_name = str;
-                            // $$.isUsed_in_Calc = 0;
                             $$.RegQuad = str;
                         } 
     | STRING_LITERAL    {
@@ -1096,15 +1078,10 @@ openScopeIF:
 
 closeScopeIF:
     '}' {   
-            printf("==============Symbol Table before popping==============\n");
+            // printf("==============Symbol Table before popping==============\n");
             // displayList();
             write_file();
             scopePop();
-            // char* go_to = PopLabel();
-            // buildTable_exp("JMP", go_to, "", 0);
-
-            //pop from stack and add the label to the quad
-            //go to else end scop (IF EXIST)
             char str1[20];
             sprintf(str1, "%d", getElseTop());
             char L [20] = "L";
@@ -1122,8 +1099,8 @@ openScopeELSE:
 
 closeScopeELSE:
     '}'     {
-                printf("==============Symbol Table before popping==============\n");
-                // displayList();
+                // printf("==============Symbol Table before popping==============\n");
+                
                 write_file();
                 scopePop();
                 add_quad("LABEL: ",PopElseLabel(),"","");
@@ -1204,6 +1181,8 @@ bora3y:
     INT VARIABLE ASSIGN INTEGER_LITERAL     { 
                                                 scopePush();
                                                 createNode($2,"int","variable",1,line);
+                                                //save intial value in the variable
+                                                // add_quad("ASSIGN", $4, "", $2);
                                             }
     ;
 
@@ -1214,7 +1193,7 @@ ForBracket:
 
 forScope:
                                                                                              
-    '{'  inBlockscope closeScope        {}  
+    '{'  inBlockscope closeScope        
     ;
 
 switchStatement:
@@ -1227,15 +1206,13 @@ caseStatements:
     ;
 
 returnStatement:
-    RETURN expression ';'   {printf("Return Statement with expression\n");} 
-    | RETURN ';'    {printf("Return Statement without expression\n");}
+    RETURN expression ';'  
+    | RETURN ';'    
     ;
 
 repeatUntilStatement:
     REPEAT openScope  inBlockscope '}' UNTIL '(' comparators ')' ';'        {
-                                                                                //get the labes pushed
-                                                                                // printf("==============Symbol Table before popping==============\n");
-                                                                                // displayList();
+                                                                                
                                                                                 write_file();
                                                                                 scopePop();
                                                                                 char* go_to = PopLabel();
@@ -1250,12 +1227,12 @@ int main() {
     initializeList();
     quad_init();
     yyparse();
-    /* displayList(); */
     write_file();
-
-    /* displayScope(); */
+    write_quad_to_file ();
     return 0;
 }
+
+
 int yyerror(char *s) {
     printf("\nERROR: %s\n", s);
     return 0;

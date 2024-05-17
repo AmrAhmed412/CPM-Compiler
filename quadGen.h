@@ -40,5 +40,7 @@ char* PopLabel();
 char* PopElseLabel();
 char* PopWhileLabel();
 
+void write_quad_to_file();
+
 
 #endif

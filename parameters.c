@@ -53,6 +53,24 @@ char *convert_to_string()
     return temp;
 }
 
+char *getParamsTYPES(){
+    char *temp = malloc(sizeof(char) * 1024); // Assuming a maximum length for the string
+    if (temp == NULL)
+    {
+        printf("Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
+    temp[0] = '\0'; // Initialize the string
+    for (int i = 0; i < count; i++)
+    {
+        strcat(temp, datatypes[i]);
+        strcat(temp, " ");
+        strcat(temp, names[i]);
+        strcat(temp, ",");
+    }
+    return temp;
+}
+
 void display()
 {
     for (int i = 0; i < count; i++)
