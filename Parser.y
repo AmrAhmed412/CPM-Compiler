@@ -1301,6 +1301,18 @@ repeatUntilStatement:
 %%
 
 int main() {
+    const char *filename = "symbol_table.txt";
+    
+    // Open the file in write mode to clear its contents
+    FILE *file = fopen(filename, "w");
+    
+    if (file == NULL) {
+        perror("Failed to open file");
+        return 1;
+    }
+    // Close the file
+    fclose(file);
+    
     initializeList();
     quad_init();
     yyparse();

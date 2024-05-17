@@ -1,6 +1,8 @@
 import sys
 import subprocess
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QTextEdit, QPushButton, QFileDialog
+import qdarkstyle
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QTextEdit, QPushButton
+from PyQt5.QtCore import Qt
 class CompilerGUI(QWidget):
     def __init__(self):
         super().__init__()
@@ -18,58 +20,55 @@ class CompilerGUI(QWidget):
         self.compile_button = QPushButton('Compile', self)
         self.compile_button.clicked.connect(self.compile_code)
         layout.addWidget(self.compile_button)
-        # Tokenized code output
-        self.token_label = QLabel('Tokenized Code:')
-        layout.addWidget(self.token_label)
-        self.token_text = QTextEdit()
-        self.token_text.setReadOnly(True)
-        layout.addWidget(self.token_text)
-        # Parsed code output
-        self.parsed_label = QLabel('Parsed Code:')
-        layout.addWidget(self.parsed_label)
-        self.parsed_text = QTextEdit()
-        self.parsed_text.setReadOnly(True)
-        layout.addWidget(self.parsed_text)
-        # Semantic analysis results output
-        self.semantic_label = QLabel('Semantic Analysis Results:')
-        layout.addWidget(self.semantic_label)
-        self.semantic_text = QTextEdit()
-        self.semantic_text.setReadOnly(True)
-        layout.addWidget(self.semantic_text)
+        # Symbol table output
+        self.symbol_label = QLabel('Symbol Table:')
+        layout.addWidget(self.symbol_label)
+        self.symbol_text = QTextEdit()
+        self.symbol_text.setReadOnly(True)
+        layout.addWidget(self.symbol_text)
+        # Quads output
+        self.quads_label = QLabel('Quads:')
+        layout.addWidget(self.quads_label)
+        self.quads_text = QTextEdit()
+        self.quads_text.setReadOnly(True)
+        self.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
+        layout.addWidget(self.quads_text)
         self.setLayout(layout)
         self.setGeometry(100, 100, 800, 600)
     def compile_code(self):
         # Read code snippet from input field
         code_snippet = self.code_text.toPlainText().strip()
-        code_snippet = self.code_text.toPlainText().strip()
         # Write code snippet to a temporary file
         with open('input_code.txt', 'w') as f:
             f.write(code_snippet)
-        # Execute a.exe with the input file
-        process = subprocess.run(['a.exe', 'input_code.txt'], capture_output=True, text=True)
-        # Simulate the compilation process and write output to files
-        tokenized_code = self.tokenize_code()
-        parsed_code = self.parse_code()
-        semantic_analysis_results = self.semantic_analysis()
-        # Display the contents of the files in the respective text fields
-        self.token_text.setPlainText(tokenized_code)
-        self.parsed_text.setPlainText(parsed_code)
-        self.semantic_text.setPlainText(semantic_analysis_results)
-    def tokenize_code(self):
-        with open("habal.txt", "r") as f:
-            code = f.read()
-        # Placeholder for actual tokenization process
-        return "Tokenized code: " + code
-    def parse_code(self):
-        with open("habal2.txt", "r") as f:
-            code = f.read()
-        # Placeholder for actual parsing process
-        return "Parsed code: " + code
-    def semantic_analysis(self):
-        with open("habal3.txt", "r") as f:
-            code = f.read()
-        # Placeholder for actual semantic analysis process
-        return "Semantic analysis results: " + code
+        
+        try:
+            # print("yalla")
+            # Execute a.exe with the input file
+            process = subprocess.Popen(['a.exe'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            # Read input from a file and pass it to the subprocess
+            with open('input_code.txt', 'r') as f:
+                input_data = f.read()
+            print(input_data)
+            # Communicate with the subprocess, sending input from the file
+            output, error = process.communicate(input=input_data)
+            # print("eddyy")
+            # print(error)
+            # Read the results from the output files
+            symbol_table = self.read_file('symbol_table.txt')
+            quads = self.read_file('quads.txt')
+            # Display the contents of the files in the respective text fields
+            self.symbol_text.setPlainText(symbol_table)
+            self.quads_text.setPlainText(quads)
+        except subprocess.CalledProcessError as e:
+            self.symbol_text.setPlainText("Error: Failed to execute a.exe")
+            self.quads_text.setPlainText("")
+    def read_file(self, file_path):
+        try:
+            with open(file_path, 'r') as f:
+                return f.read()
+        except FileNotFoundError:
+            return f"Error: {file_path} not found."
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     gui = CompilerGUI()
