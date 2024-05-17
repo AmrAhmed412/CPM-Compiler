@@ -1,0 +1,13 @@
+SCOPE 1
+NAME	 DATATYPE	 TYPE	 INITIALIZED	 LINE No.
+amr		 int		 variable		 1		 2 
+=============================================================
+SCOPE 1
+NAME	 DATATYPE	 TYPE	 INITIALIZED	 LINE No.
+abod		 int		 variable		 1		 3 
+=============================================================
+SCOPE 0
+NAME	 DATATYPE	 TYPE	 INITIALIZED	 LINE No.
+mai		 int		 variable		 1		 1 
+T		 char		 variable		 1		 4 
+=============================================================

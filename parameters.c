@@ -11,6 +11,7 @@ int idx = 0;
 int param_value_type[MAX_PARAMETERS]; // datatype of variable
 char *param_var_type[MAX_PARAMETERS]; // name of variable
 int param_var_init[MAX_PARAMETERS];   // if variable is initialized or not
+char *param_var_name[MAX_PARAMETERS]; // name of variable
 
 void addParameter(char *datatype, char *name)
 {
@@ -158,11 +159,12 @@ int get_index()
     return idx;
 }
 
-void addCallParams(int value_type, char *var_type, int var_init)
+void addCallParams(int value_type, char *var_type, int var_init, char *var_name)
 {
     param_value_type[idx] = value_type;
     param_var_type[idx] = var_type;
     param_var_init[idx] = var_init;
+    param_var_name[idx] = var_name;
     idx++;
 }
 
@@ -179,6 +181,11 @@ char **get_param_var_type()
 int *get_param_var_init()
 {
     return param_var_init;
+}
+
+char **get_param_var_name(){
+    return param_var_name;
+
 }
 
 void set_index(int value)

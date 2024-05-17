@@ -203,3 +203,77 @@ if (x=3)
 {
 	print (x);
 }
+
+
+
+
+=============================================
+int y = 0;
+repeat{
+	char m = 't';
+	if(m != 'o'){
+		int k = 420;
+	}
+	string amr;
+} until(m == 'y');
+
+
+
+=========================
+int y = 0;
+if(y>=0){
+char x;
+}else{
+string za3bola;
+}
+string el_ola;
+
+
+
+==============================
+int test(int y, char z, bool amongus){
+string za3bola = "el_ola";
+}
+int x;
+x = test(5,'x',false);
+char m;
+==================================
+int x = 0;
+int y = 9;
+while(x < 10){
+	x= 2;
+	while(y > 0){
+		char T;
+		return;
+	}
+	string g;
+}
+
+
+
+===============================
+int e = 0;
+int y = 2;
+if(e<9)
+{
+int lmaaaoo;
+if(y == 4) 
+{
+float i;
+string mai;
+}
+}
+else{
+int z;
+}
+int k;
+
+=============================
+int mai = 1190365;
+if(mai == 0){
+int amr = 1190074;
+}
+repeat{
+int abod = 1190493;
+} until (mai == 1);
+char T = 'a';

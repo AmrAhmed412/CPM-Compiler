@@ -11,7 +11,7 @@ struct Quad {
 };
 
 void add_quad(char *op, char *arg1, char *arg2, char *result);
-
+void quad_init();
 
 void flush_temp();
 
@@ -27,4 +27,18 @@ void print_quads();
 
 char* buildTable_exp(char* op, char* arg1, char* arg2, int isAssign);
 void buildTable_assign(char* arg1, char* arg2);
+
+void CreateLabel();
+void CreateLabelIF();
+void CreateLabelWhile();
+int getStackTop();
+int getElseTop();
+int getWhileTop();
+
+void CreateLabelIF();
+char* PopLabel();
+char* PopElseLabel();
+char* PopWhileLabel();
+
+
 #endif

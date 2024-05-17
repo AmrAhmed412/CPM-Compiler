@@ -98,6 +98,26 @@ void displayList()
     }
 }
 
+void write_file()
+{
+    // write the current linked list to a file
+    FILE *f = fopen("symbol_table.txt", "a");
+    if (f == NULL)
+    {
+        printf("Error opening file!\n");
+        exit(1);
+    }
+    struct Node *current = head;
+    fprintf(f, "SCOPE %d\n", scopeIndex);
+    fprintf(f, "NAME\t DATATYPE\t TYPE\t INITIALIZED\t LINE No.\n");
+    while (current != NULL)
+    {
+        fprintf(f, "%s\t\t %s\t\t %s\t\t %d\t\t %d \n", current->name, current->datatype, current->type, current->init, current->lineNo);
+        current = current->next;
+    }
+    fprintf(f, "=============================================================\n");
+}
+
 void displayListStack(struct Node *node)
 {
     struct Node *current = node;
@@ -196,14 +216,17 @@ struct Node *searchScope(char *name)
 
 void displayScope()
 {
+    FILE *f = fopen("symbol_table.txt", "w");
     for (int i = scopeIndex; i >= 0; i--)
     {
         struct Node *current = scopes[i];
-        printf("===================Scope (%d): ==================\n", i);
+        fprintf(f,"===================Scope (%d): ==================\n", i);
+        fprintf(f,"NAME\t DATATYPE\t TYPE\t INITIALIZED\t LINE No.\n");
         while (current != NULL)
         {
-            printf("%s, %s, %s, %d, %d\n", current->name, current->datatype, current->type, current->init, current->lineNo);
+            fprintf(f,"%s %s %s %d %d\n", current->name, current->datatype, current->type, current->init, current->lineNo);
             current = current->next;
         }
     }
+    fclose(f);
 }

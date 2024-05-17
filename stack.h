@@ -5,30 +5,30 @@
 #define SIZE 100
 
 // Define the structure of a stack
-typedef struct {
+struct Stack{
     int items[SIZE];
     int top;
-} Stack;
+};
 
 // Function to initialize the stack
-void initialize(Stack *stack);
+void initialize(struct Stack* stack);
 
 // Function to check if the stack is empty
-int isEmpty(Stack *stack) ;
+int isEmpty(struct Stack* stack) ;
 // Function to check if the stack is full
-int isFull(Stack *stack);
+int isFull(struct Stack* stack);
 
 // Function to push an element onto the stack
-void push(Stack *stack, int value);
+void push(struct Stack* stack, int value);
 
 // Function to pop an element from the stack
-int pop(Stack *stack);
+int pop(struct Stack* stack);
 
 // Function to peek the top element of the stack without removing it
-int peek(Stack *stack);
+int peek(struct Stack* stack);
 
 // Function to display the elements of the stack
-void displayQuad(Stack *stack);
+void displayQuad(struct Stack* stack);
 
 
 #endif

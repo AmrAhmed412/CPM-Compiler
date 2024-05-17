@@ -1,8 +1,8 @@
+#include "stack.h"
 #include "quadGen.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "stack.h"
 
 #define MAX_SIZE 300
 
@@ -15,6 +15,19 @@ struct Quad quads[MAX_SIZE];
 
 // int temp_idx = 0;
 int quad_idx = 0;
+
+struct Stack *temp_stack;
+struct Stack *else_stack;
+struct Stack *while_stack;
+
+void quad_init(){
+    temp_stack = (struct Stack*)malloc(sizeof(struct Stack));
+    initialize(temp_stack);
+    else_stack = (struct Stack*)malloc(sizeof(struct Stack));
+    initialize(else_stack);
+    while_stack = (struct Stack*)malloc(sizeof(struct Stack));
+    initialize(while_stack);
+}
 
 void add_quad(char *op, char *arg1, char *arg2, char *result) {
     struct Quad quad;
@@ -71,15 +84,22 @@ char* buildTable_exp(char* op, char* arg1, char* arg2, int isAssign) {
     char* T = (char*)malloc(20 * sizeof(char)); // Allocate memory for T dynamically
     strcpy(T, "T");
     strcat(T, str);
-    add_quad(op, arg1, arg2, T);
     if (isAssign == 1) {
         printf("arg1 = %s\n", arg1);
         printf("arg2 = %s\n", arg2);
         printf("T = %s\n", T);
         add_quad("ASSIGN", T, "", arg2);
+        inc_T_idx();
     }
+    else if(isAssign == 2){
+        add_quad(op, arg1, "", arg2);
+    }
+    else{
+        add_quad(op, arg1, arg2, T);
+        inc_T_idx();
+    }
+        
     // print_quads();
-    inc_T_idx();
     return T;
 }
 
@@ -99,4 +119,111 @@ void buildTable_assign(char* arg1, char* arg2){
         add_quad("ASSIGN",arg2,"", arg1);
     }
 }
+
+
+
+void CreateLabel(){
+    char str[20];
+    sprintf(str, "%d", get_L_idx());
+    char L [20] = "L";
+    strcat(L,str);
+    add_quad("LABEL:",L,"","");
+    push(temp_stack, get_L_idx());
+    inc_L_idx();
+}
+
+void CreateLabelIF(){
+    char str[20];
+    sprintf(str, "%d", get_L_idx());
+    char L [20] = "L";
+    strcat(L,str);
+    // add_quad("LABEL:",L,"","");
+    push(temp_stack, get_L_idx()); //kda dh awl el else aka enter else
+    inc_L_idx();
+    push(else_stack, get_L_idx()); //efks el else 3and0 y3ny awl condition true
+    inc_L_idx();
+}
+
+
+void CreateLabelWhile(){
+    char str[20];
+    sprintf(str, "%d", get_L_idx());
+    char L [20] = "L";
+    strcat(L,str);
+    add_quad("LABEL:",L,"","");
+    push(temp_stack, get_L_idx()); //for the jump back the while
+    inc_L_idx();
+    push(while_stack, get_L_idx()); //for the jump outside the while
+    inc_L_idx();
+}
+
+
+int getStackTop(){
+    return peek(temp_stack);
+}
+
+int getElseTop(){
+    return peek(else_stack);
+}
+
+int getWhileTop(){
+    return peek(while_stack);
+}
+
+//pop from stack and return label
+
+char* PopLabel(){
+    int idx = pop(temp_stack);
+    char str[20];
+    sprintf(str, "%d", idx);
+    char L [20] = "L";
+    strcat(L,str);
+    char* label = strdup(L); // Allocate memory and copy the string
+    if (label == NULL) {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
+    return label;
+}
+
+char* PopElseLabel(){
+    int idx = pop(else_stack);
+    char str[20];
+    sprintf(str, "%d", idx);
+    char L [20] = "L";
+    strcat(L,str);
+    char* label = strdup(L); // Allocate memory and copy the string
+    if (label == NULL) {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
+    return label;
+}
+
+char* PopWhileLabel(){
+    int idx = pop(while_stack);
+    char str[20];
+    sprintf(str, "%d", idx);
+    char L [20] = "L";
+    strcat(L,str);
+    char* label = strdup(L); // Allocate memory and copy the string
+    if (label == NULL) {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
+    return label;
+}
+
+
+// void pushIf(char * gotoConditionReg){
+//     char str[20];
+//     sprintf(str, "%d", get_L_idx());
+//     char L [20] = "L";
+//     strcat(L,str);
+//     add_quad("Je 1", gotoConditionReg, "", L);
+//     quad_idx++; //skip row for the jump else
+//     add_quad("LABEL: ",L, "", "");
+//     push(temp_stack, quad_idx-2);
+//     inc_L_idx();
+// }
 

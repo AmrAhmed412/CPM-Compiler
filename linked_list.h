@@ -26,6 +26,8 @@ void deleteNode(char *name);
 // Function to display the linked list
 void displayList();
 
+void write_file();
+
 void displayListStack(struct Node *head);
 
 // Function to free memory allocated for the linked list
