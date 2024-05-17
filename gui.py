@@ -49,7 +49,7 @@ class CompilerGUI(QWidget):
             # Read input from a file and pass it to the subprocess
             with open('input_code.txt', 'r') as f:
                 input_data = f.read()
-            print(input_data)
+            # print(input_data)
             # Communicate with the subprocess, sending input from the file
             output, error = process.communicate(input=input_data)
             # print("eddyy")

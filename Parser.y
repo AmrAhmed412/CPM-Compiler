@@ -194,8 +194,8 @@ inBlockscope:
     ;
 
 statement:                 
-    declaration ';'          
-    | assignment ';'        
+    declaration           
+    | assignment     
     | ifStatement           
     | whileStatement        
     | forStatement          
@@ -530,7 +530,7 @@ parameters:
     ;
 
 declaration:
-    typeSpecifier VARIABLE                                          {
+    typeSpecifier VARIABLE ';'                                          {
                                                                         if (strcmp($1,"void")!=0)
                                                                         {
                                                                             struct Node *var = searchScope($2);
@@ -553,7 +553,7 @@ declaration:
                                                                         }
                                                                     }
 
-    | typeSpecifier VARIABLE ASSIGN expression                      {
+    | typeSpecifier VARIABLE ASSIGN expression ';'                     {
                                                                         if (strcmp($1,"void")!=0)
                                                                         {
                                                                             struct Node *var = searchScope($2);
@@ -613,7 +613,7 @@ typeSpecifier:
     ;
 
 assignment:
-    VARIABLE ASSIGN expression              {
+    VARIABLE ASSIGN expression ';'               {
                                                 // x = 1+2+3      ========> case 1
                                                 // quad(+,1,2,T1)
                                                 // quad(+,T1,3,T2)
@@ -661,7 +661,7 @@ assignment:
                                                 }
                                                 line++;
                                             }
-    | VARIABLE PLUS_ASSIGN expression       {
+    | VARIABLE PLUS_ASSIGN expression ';'        {
                                                 // x += 1+2+3      ========> case 1
                                                 // quad(+,1,2,T1)
                                                 // quad(+,T1,3,T2)
@@ -718,7 +718,7 @@ assignment:
                                                 }
                                                 line++;
                                             }
-    | VARIABLE MINUS_ASSIGN expression      {
+    | VARIABLE MINUS_ASSIGN expression ';'       {
                                                 struct Node *var = searchScope($1);
                                                 if(var==NULL)
                                                 {
@@ -768,7 +768,7 @@ assignment:
                                                 line++;
                                             }       
     
-    | VARIABLE MULTIPLY_ASSIGN expression   {
+    | VARIABLE MULTIPLY_ASSIGN expression ';'    {
                                                 struct Node *var = searchScope($1);
                                                 if(var==NULL)
                                                 {
@@ -817,7 +817,7 @@ assignment:
                                                 }
                                                 line++;
                                             }
-    | VARIABLE DIVIDE_ASSIGN expression     {
+    | VARIABLE DIVIDE_ASSIGN expression  ';'     {
                                                 struct Node *var = searchScope($1);
                                                 if(var==NULL)
                                                 {
@@ -1316,11 +1316,14 @@ int main() {
     initializeList();
     quad_init();
     yyparse();
-    write_file();
     if(ERROR == 0)
+        write_file();
         write_quad_to_file ();
     else{
-        printf("COMPILATION ERROR\n");
+        FILE *file = fopen(filename, "w");
+        fprintf(file, "COMPILATION ERROR\n");
+        fclose(file);
+        /* printf("COMPILATION ERROR\n"); */
     }
     return 0;
 }
