@@ -31,14 +31,18 @@ void buildTable_assign(char* arg1, char* arg2);
 void CreateLabel();
 void CreateLabelIF();
 void CreateLabelWhile();
+void CreateLabelFor();
+
 int getStackTop();
 int getElseTop();
 int getWhileTop();
+int getForTop();
 
 void CreateLabelIF();
 char* PopLabel();
 char* PopElseLabel();
 char* PopWhileLabel();
+char* PopForLabel();
 
 void write_quad_to_file();
 

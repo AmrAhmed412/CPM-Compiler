@@ -11,7 +11,7 @@
     #include "quadGen.h"
     // #include "stack.h"
 
-
+    int ERROR=0;
     
     int line=1;
     
@@ -114,6 +114,7 @@ typeSpecifier VARIABLE '(' parameters ')'                   {
                                                                 if(node!=NULL)
                                                                 {
                                                                     printf("Function already declared\n");
+                                                                    ERROR = 1;
                                                                 }
                                                                 else
                                                                 {
@@ -148,6 +149,7 @@ typeSpecifier VARIABLE '(' parameters ')'                   {
                                                     if(node!=NULL)
                                                     {
                                                         printf("Function already declared\n");
+                                                        ERROR = 1;
                                                     }
                                                     else
                                                     {
@@ -213,6 +215,7 @@ functionCall:
                                                         if (temp ==NULL)
                                                         {
                                                             printf("Variable not declared\n");
+                                                            ERROR = 1;
                                                         }
                                                         else
                                                         {
@@ -220,6 +223,7 @@ functionCall:
                                                             if (temp2 ==NULL)
                                                             {
                                                                 printf("Function not declared\n");
+                                                                ERROR = 1;
                                                             }
                                                             else
                                                             {
@@ -230,6 +234,7 @@ functionCall:
                                                                     if (index!=0)
                                                                     {
                                                                         printf("Function's parameters are not passed to the function\n");
+                                                                        ERROR = 1;
                                                                     }
                                                                     else
                                                                     {
@@ -245,6 +250,7 @@ functionCall:
                                                                 if (temp ==NULL)
                                                                 {
                                                                     printf("Variable not declared\n");
+                                                                    ERROR = 1;
                                                                 }
                                                                 else
                                                                 {
@@ -252,6 +258,7 @@ functionCall:
                                                                     if (temp2 ==NULL)
                                                                     {
                                                                         printf("Function not declared\n");
+                                                                        ERROR = 1;
                                                                     }
                                                                     else
                                                                     {
@@ -319,6 +326,7 @@ functionCall:
                                         if (index!=0)
                                         {
                                             printf("Function's parameters are not passed to the function\n");
+                                            ERROR = 1;
                                         }
                                         else
                                         {
@@ -391,6 +399,7 @@ functionCall:
                                                                     if (temp2 ==NULL)
                                                                     {
                                                                         printf("Function not declared\n");
+                                                                        ERROR = 1;
                                                                     }
                                                                     else
                                                                     {
@@ -402,6 +411,7 @@ functionCall:
                                                                             if (index!=0)
                                                                             {
                                                                                 printf("Function's parameters are not passed to the function\n");
+                                                                                ERROR = 1;
                                                                             }
                                                                             else
                                                                             {
@@ -424,6 +434,7 @@ functionCall:
                                                                 else
                                                                 {
                                                                     printf("Variable already declared\n");
+                                                                    ERROR = 1;
                                                                 }
                                                                 line++;
                                                             }
@@ -436,6 +447,7 @@ functionCall:
                                                                     if (temp2 ==NULL)
                                                                     {
                                                                         printf("Function not declared\n");
+                                                                        ERROR = 1;
                                                                     }
                                                                     else
                                                                     {
@@ -455,6 +467,7 @@ functionCall:
                                                                                     if (param_var_init[i]==0)
                                                                                     {
                                                                                         printf("Variable not initialized\n");
+                                                                                        ERROR = 1;
                                                                                     }
                                                                                     else
                                                                                     {
@@ -495,6 +508,7 @@ functionCall:
                                                                 else
                                                                 {
                                                                     printf("Variable already declared\n");
+                                                                    ERROR = 1;
                                                                 }
                                                                 line++;
                                                             }
@@ -535,6 +549,7 @@ declaration:
                                                                         else
                                                                         {
                                                                             printf("Void cannot be assigned to a variable\n");
+                                                                            ERROR = 1;
                                                                         }
                                                                     }
 
@@ -545,6 +560,7 @@ declaration:
                                                                         
                                                                             if(var!=NULL){
                                                                                 printf("Variable already declared\n");
+                                                                                ERROR = 1;
                                                                             }else{
                                                                                 if ($4.value_type!=1)
                                                                                 {
@@ -557,6 +573,7 @@ declaration:
                                                                                     else
                                                                                     {
                                                                                         printf("Type Mismatch\n");
+                                                                                        ERROR = 1;
                                                                                     
                                                                                     }
                                                                                 }
@@ -570,6 +587,7 @@ declaration:
                                                                                     else
                                                                                     {
                                                                                         printf("Type Mismatch\n");
+                                                                                        ERROR = 1;
                                                                                     }
                                                                                 }
                                                                             }
@@ -578,6 +596,7 @@ declaration:
                                                                         else
                                                                         {
                                                                             printf("Void cannot be assigned to a variable\n");
+                                                                            ERROR = 1;
                                                                         }
                                                                        
                                                                     }
@@ -607,6 +626,7 @@ assignment:
                                                 if(var==NULL)
                                                 {
                                                     printf("Variable not declared\n");
+                                                    ERROR = 1;
                                                 }
                                                 else
                                                 {
@@ -621,6 +641,7 @@ assignment:
                                                         else
                                                         {
                                                             printf("Type Mismatch\n");
+                                                            ERROR = 1;
                                                         }
                                                     }
                                                     else
@@ -634,6 +655,7 @@ assignment:
                                                         else
                                                         {
                                                             printf("Type Mismatch\n");
+                                                            ERROR = 1;
                                                         }
                                                     } 
                                                 }
@@ -653,12 +675,14 @@ assignment:
                                                 if(var==NULL)
                                                 {
                                                     printf("Variable not declared\n");
+                                                    ERROR = 1;
                                                 }
                                                 else
                                                 {
                                                     if (var->init==0)
                                                     {
                                                         printf("Variable not initialized\n");
+                                                        ERROR = 1;
                                                     }
                                                     else
                                                     {
@@ -673,6 +697,7 @@ assignment:
                                                             else
                                                             {
                                                                 printf("Type Mismatch\n");
+                                                                ERROR = 1;
                                                             }
                                                         }
                                                         else
@@ -686,6 +711,7 @@ assignment:
                                                             else
                                                             {
                                                                 printf("Type Mismatch\n");
+                                                                ERROR = 1;
                                                             }
                                                         }
                                                     }
@@ -697,12 +723,14 @@ assignment:
                                                 if(var==NULL)
                                                 {
                                                     printf("Variable not declared\n");
+                                                    ERROR = 1;
                                                 }
                                                 else
                                                 {
                                                     if (var->init==0)
                                                     {
                                                         printf("Variable not initialized\n");
+                                                        ERROR = 1;
                                                     }
                                                     else
                                                     {
@@ -717,6 +745,7 @@ assignment:
                                                             else
                                                             {
                                                                 printf("Type Mismatch\n");
+                                                                ERROR = 1;
                                                             
                                                             }
                                                         }
@@ -731,6 +760,7 @@ assignment:
                                                                 else
                                                             {
                                                                 printf("Type Mismatch\n");
+                                                                ERROR = 1;
                                                             }
                                                         }
                                                     }
@@ -743,12 +773,14 @@ assignment:
                                                 if(var==NULL)
                                                 {
                                                     printf("Variable not declared\n");
+                                                    ERROR = 1;
                                                 }
                                                 else
                                                 {
                                                     if (var->init==0)
                                                     {
                                                         printf("Variable not initialized\n");
+                                                        ERROR = 1;
                                                     }
                                                      else
                                                     {
@@ -763,6 +795,7 @@ assignment:
                                                             else
                                                             {
                                                                 printf("Type Mismatch\n");
+                                                                ERROR = 1;
                                                             
                                                             }
                                                         }
@@ -777,6 +810,7 @@ assignment:
                                                                 else
                                                             {
                                                                 printf("Type Mismatch\n");
+                                                                ERROR = 1;
                                                             }
                                                         }
                                                     }
@@ -788,6 +822,7 @@ assignment:
                                                 if(var==NULL)
                                                 {
                                                     printf("Variable not declared\n");
+                                                    ERROR = 1;
                                                 }
                                                 else
                                                 {
@@ -810,6 +845,7 @@ assignment:
                                                             else
                                                             {
                                                                 printf("Type Mismatch\n");
+                                                                ERROR = 1;
                                                             
                                                             }
                                                         }
@@ -822,6 +858,7 @@ assignment:
                                                                 else
                                                             {
                                                                 printf("Type Mismatch\n");
+                                                                ERROR = 1;
                                                             }
                                                         }
 
@@ -916,6 +953,7 @@ comparators:
                                         if (res==0)
                                         {
                                             printf("Comparison not possible\n");
+                                            ERROR = 1;
                                         }
                                         $$ = buildTable_exp("EQ", $1.RegQuad, $3.RegQuad, 0);
                                         
@@ -925,6 +963,7 @@ comparators:
                                         if (res==0)
                                         {
                                             printf("Comparison not possible\n");
+                                            ERROR = 1;
                                         }
                                         $$ = buildTable_exp("NEQ", $1.RegQuad, $3.RegQuad, 0);
                                     }
@@ -933,6 +972,7 @@ comparators:
                                         if (res==0)
                                         {
                                             printf("Comparison not possible\n");
+                                            ERROR = 1;
                                         }
                                         $$ = buildTable_exp("GT", $1.RegQuad, $3.RegQuad, 0);
                                     }
@@ -941,6 +981,7 @@ comparators:
                                         if (res==0)
                                         {
                                             printf("Comparison not possible\n");
+                                            ERROR = 1;
                                         }
                                         $$ = buildTable_exp("LT", $1.RegQuad, $3.RegQuad, 0);
                                     }
@@ -949,6 +990,7 @@ comparators:
                                         if (res==0)
                                         {
                                             printf("Comparison not possible\n");
+                                            ERROR = 1;
                                         }
                                         $$ = buildTable_exp("GTE", $1.RegQuad, $3.RegQuad, 0);
                                     }
@@ -957,6 +999,7 @@ comparators:
                                                 if (res==0)
                                                 {
                                                     printf("Comparison not possible\n");
+                                                    ERROR = 1;
                                                 }
                                                 $$ = buildTable_exp("LTE", $1.RegQuad, $3.RegQuad, 0);
                                             }
@@ -964,6 +1007,7 @@ comparators:
                                                 if (boolchecker($1.var_type,$1.var_init)==0 || boolchecker($3.var_type,$3.var_init)==0)
                                                 {
                                                     printf("And Operator can only be used with boolean values\n");
+                                                    ERROR = 1;
                                                    
                                                 } 
                                                 $$ = buildTable_exp("AND", $1.RegQuad, $3.RegQuad, 0);
@@ -972,6 +1016,7 @@ comparators:
                                                 if (boolchecker($1.var_type,$1.var_init)==0 || boolchecker($3.var_type,$3.var_init)==0)
                                                 {
                                                     printf("Or Operator can only be used with boolean values\n");
+                                                    ERROR = 1;
                                                    
                                                 } 
                                                 $$ = buildTable_exp("OR", $1.RegQuad, $3.RegQuad, 0);
@@ -980,6 +1025,7 @@ comparators:
                                                 if (boolchecker($2.var_type,$2.var_init)==0)
                                                 {
                                                     printf("Not Operator can only be used with boolean values\n");
+                                                    ERROR = 1;
                                                 }
                                                 $$ = buildTable_exp("NOT", $2.RegQuad, "", 0);
                                             }
@@ -1034,6 +1080,7 @@ variableValue:
                             struct Node *node  = searchScope($1);
                             if(node == NULL){
                                 printf("Variable not declared\n");
+                                ERROR = 1;
                             }
                             else
                             {
@@ -1046,6 +1093,7 @@ variableValue:
                                 }else
                                 {
                                     printf("Variable not initialized\n");
+                                    ERROR = 1;
                                 }
                             }
                         }       
@@ -1167,33 +1215,63 @@ whileStatement:
 
 
 forExpression:
-    VARIABLE PLUS_ASSIGN expression     {}
-    | VARIABLE MINUS_ASSIGN expression  {} 
-    | VARIABLE MULTIPLY_ASSIGN expression   {} 
-    | VARIABLE DIVIDE_ASSIGN expression     {} 
+    VARIABLE PLUS_ASSIGN expression         {buildTable_exp("ADD", $3.RegQuad, $1, 1);}
+    | VARIABLE MINUS_ASSIGN expression      {buildTable_exp("SUB", $3.RegQuad, $1, 1);}    
+    | VARIABLE MULTIPLY_ASSIGN expression   {buildTable_exp("MUL", $3.RegQuad, $1, 1);} 
+    | VARIABLE DIVIDE_ASSIGN expression     {buildTable_exp("DIV", $3.RegQuad, $1, 1);} 
 
     ;
 
 forStatement:
-    FOR ForBracket forScope    { }
+    FOR ForBracket forScope    
     ;
 bora3y:
     INT VARIABLE ASSIGN INTEGER_LITERAL     { 
                                                 scopePush();
                                                 createNode($2,"int","variable",1,line);
                                                 //save intial value in the variable
-                                                // add_quad("ASSIGN", $4, "", $2);
+                                                char str[20];
+                                                sprintf(str, "%d", $4);
+                                                add_quad("ASSIGN", str, "", $2);
+                                                CreateLabelFor();
                                             }
     ;
 
-ForBracket:
-    '(' bora3y ';' comparators ';' forExpression ')' 
+semiCOLON:
+    ';' { 
+            char str[20];
+            sprintf(str, "%d", get_T_idx()-1);
+            char* T = (char*)malloc(20 * sizeof(char)); // Allocate memory for T dynamically
+            strcpy(T, "T");
+            strcat(T, str);
+
+            char str1[20];
+            sprintf(str1, "%d", getForTop());
+            char* L = (char*)malloc(20 * sizeof(char)); // Allocate memory for T dynamically
+            strcpy(L, "L");
+            strcat(L, str1);
+            add_quad("JE 0",T,"",L);
+        }
     ;
 
+ForBracket:
+    '(' bora3y ';' comparators semiCOLON forExpression ')' 
+    ;
+
+closeScopeFOR:
+    '}' {   
+            // printf("==============Symbol Table before popping==============\n");
+            // displayList();
+            write_file();
+            scopePop();
+
+            add_quad("JMP","","",PopLabel());
+        }
+    ;
 
 forScope:
                                                                                              
-    '{'  inBlockscope closeScope        
+    '{'  inBlockscope closeScopeFOR    {add_quad("LABEL: ",PopForLabel(),"","");}    
     ;
 
 switchStatement:
@@ -1217,8 +1295,7 @@ repeatUntilStatement:
                                                                                 scopePop();
                                                                                 char* go_to = PopLabel();
                                                                                 char* cmp = $7;
-                                                                                buildTable_exp("JE 0", cmp, go_to, 2);
-
+                                                                                add_quad("JE 0", cmp, "", go_to);
                                                                             }
 ;
 %%
@@ -1228,7 +1305,11 @@ int main() {
     quad_init();
     yyparse();
     write_file();
-    write_quad_to_file ();
+    if(ERROR == 0)
+        write_quad_to_file ();
+    else{
+        printf("COMPILATION ERROR\n");
+    }
     return 0;
 }
 

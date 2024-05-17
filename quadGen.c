@@ -19,6 +19,7 @@ int quad_idx = 0;
 struct Stack *temp_stack;
 struct Stack *else_stack;
 struct Stack *while_stack;
+struct Stack *for_stack;
 
 void quad_init(){
     temp_stack = (struct Stack*)malloc(sizeof(struct Stack));
@@ -27,6 +28,8 @@ void quad_init(){
     initialize(else_stack);
     while_stack = (struct Stack*)malloc(sizeof(struct Stack));
     initialize(while_stack);
+    for_stack = (struct Stack*)malloc(sizeof(struct Stack));
+    initialize(for_stack);
 }
 
 void add_quad(char *op, char *arg1, char *arg2, char *result) {
@@ -84,20 +87,12 @@ char* buildTable_exp(char* op, char* arg1, char* arg2, int isAssign) {
     char* T = (char*)malloc(20 * sizeof(char)); // Allocate memory for T dynamically
     strcpy(T, "T");
     strcat(T, str);
+    add_quad(op, arg1, arg2, T);
     if (isAssign == 1) {
-        printf("arg1 = %s\n", arg1);
-        printf("arg2 = %s\n", arg2);
-        printf("T = %s\n", T);
         add_quad("ASSIGN", T, "", arg2);
-        inc_T_idx();
+        // inc_T_idx();
     }
-    else if(isAssign == 2){
-        add_quad(op, arg1, "", arg2);
-    }
-    else{
-        add_quad(op, arg1, arg2, T);
-        inc_T_idx();
-    }
+    inc_T_idx();
         
     // print_quads();
     return T;
@@ -157,6 +152,18 @@ void CreateLabelWhile(){
     inc_L_idx();
 }
 
+void CreateLabelFor(){
+    char str[20];
+    sprintf(str, "%d", get_L_idx());
+    char L [20] = "L";
+    strcat(L,str);
+    add_quad("LABEL:",L,"","");
+    push(temp_stack, get_L_idx()); //3lashan atla3 tany lel statement
+    inc_L_idx();
+    push(for_stack, get_L_idx()); //3lashan lma el check yb2a false yro7 lel ba2y
+    inc_L_idx();
+}
+
 
 int getStackTop(){
     return peek(temp_stack);
@@ -168,6 +175,10 @@ int getElseTop(){
 
 int getWhileTop(){
     return peek(while_stack);
+}
+
+int getForTop(){
+    return peek(for_stack);
 }
 
 //pop from stack and return label
@@ -214,6 +225,20 @@ char* PopWhileLabel(){
     return label;
 }
 
+char* PopForLabel(){
+    int idx = pop(for_stack);
+    char str[20];
+    sprintf(str, "%d", idx);
+    char L [20] = "L";
+    strcat(L,str);
+    char* label = strdup(L); // Allocate memory and copy the string
+    if (label == NULL) {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
+    return label;
+}
+
 
 void write_quad_to_file (){
     FILE *f = fopen("quads.txt", "w");
@@ -233,16 +258,4 @@ void write_quad_to_file (){
     }
     fclose(f);
 }
-
-// void pushIf(char * gotoConditionReg){
-//     char str[20];
-//     sprintf(str, "%d", get_L_idx());
-//     char L [20] = "L";
-//     strcat(L,str);
-//     add_quad("Je 1", gotoConditionReg, "", L);
-//     quad_idx++; //skip row for the jump else
-//     add_quad("LABEL: ",L, "", "");
-//     push(temp_stack, quad_idx-2);
-//     inc_L_idx();
-// }
 
