@@ -11,3 +11,73 @@ NAME	 DATATYPE	 TYPE	 INITIALIZED	 LINE No.
 mai		 int		 variable		 1		 1 
 T		 char		 variable		 1		 4 
 =============================================================
+SCOPE 1
+NAME	 DATATYPE	 TYPE	 INITIALIZED	 LINE No.
+amr		 int		 variable		 1		 2 
+=============================================================
+SCOPE 1
+NAME	 DATATYPE	 TYPE	 INITIALIZED	 LINE No.
+abod		 int		 variable		 1		 3 
+=============================================================
+SCOPE 0
+NAME	 DATATYPE	 TYPE	 INITIALIZED	 LINE No.
+mai		 int		 variable		 1		 1 
+T		 char		 variable		 1		 4 
+=============================================================
+SCOPE 2
+NAME	 DATATYPE	 TYPE	 INITIALIZED	 LINE No.
+i		 float		 variable		 0		 4 
+mai		 string		 variable		 0		 5 
+=============================================================
+SCOPE 1
+NAME	 DATATYPE	 TYPE	 INITIALIZED	 LINE No.
+lmaaaoo		 int		 variable		 0		 3 
+=============================================================
+SCOPE 1
+NAME	 DATATYPE	 TYPE	 INITIALIZED	 LINE No.
+z		 int		 variable		 0		 6 
+=============================================================
+SCOPE 0
+NAME	 DATATYPE	 TYPE	 INITIALIZED	 LINE No.
+e		 int		 variable		 1		 1 
+y		 int		 variable		 1		 2 
+k		 int		 variable		 0		 7 
+=============================================================
+SCOPE 2
+NAME	 DATATYPE	 TYPE	 INITIALIZED	 LINE No.
+i		 float		 variable		 0		 4 
+mai		 string		 variable		 0		 5 
+=============================================================
+SCOPE 1
+NAME	 DATATYPE	 TYPE	 INITIALIZED	 LINE No.
+lmaaaoo		 int		 variable		 0		 3 
+=============================================================
+SCOPE 1
+NAME	 DATATYPE	 TYPE	 INITIALIZED	 LINE No.
+z		 int		 variable		 0		 6 
+=============================================================
+SCOPE 0
+NAME	 DATATYPE	 TYPE	 INITIALIZED	 LINE No.
+e		 int		 variable		 1		 1 
+y		 int		 variable		 1		 2 
+k		 int		 variable		 0		 7 
+=============================================================
+SCOPE 2
+NAME	 DATATYPE	 TYPE	 INITIALIZED	 LINE No.
+i		 float		 variable		 0		 4 
+mai		 string		 variable		 0		 5 
+=============================================================
+SCOPE 1
+NAME	 DATATYPE	 TYPE	 INITIALIZED	 LINE No.
+lmaaaoo		 int		 variable		 0		 3 
+=============================================================
+SCOPE 1
+NAME	 DATATYPE	 TYPE	 INITIALIZED	 LINE No.
+z		 int		 variable		 0		 6 
+=============================================================
+SCOPE 0
+NAME	 DATATYPE	 TYPE	 INITIALIZED	 LINE No.
+e		 int		 variable		 1		 1 
+y		 int		 variable		 1		 2 
+k		 int		 variable		 0		 7 
+=============================================================
