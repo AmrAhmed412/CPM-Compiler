@@ -1,4 +1,4 @@
-# cpp_compiler
+# cpm_compiler
 
 To run our C+-™ Compiler, you should write these 4 commands in succession in your command prompt where the source files are stored (exclude the [no.)] from the commands):
 
